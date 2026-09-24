@@ -53,3 +53,43 @@ Work Log:
 
 Stage Summary:
 - Site 100% verificado no navegador: renderização, interatividade (FAQ, formulário, countdown, âncoras, CTA), responsividade mobile e footer fixo confirmados. Nenhuma correção foi necessária — o build da Task 2 passou em todos os testes end-to-end.
+
+---
+Task ID: 4
+Agent: main-orchestrator (Z.ai Code)
+Task: Aplicar o design real do arquivo do usuário (Livro dos Sonhos, obtido via Google Drive) no lugar da landing anterior
+
+Work Log:
+- Uploads diretos falharam 5x (pasta upload sempre vazia); arquivo obtido com sucesso via link público do Google Drive (`curl` → livro-dos-sonhos.zip, 2,6MB).
+- Zip analisado: projeto React/Vite com App.jsx, styles.css (puro, sem framework), fonts.css (Fira Sans + Fira Condensed woff2), content.js, comercial.js, imagens webp reais do livro (capa com tigre/arara/serpente, índice, tabela dos 25 bichos, verbetes A/B/L/S + versões "originais" p/ zoom) e robots.txt.
+- Assets copiados: public/assets/*.webp, public/assets/originais/*.webp, public/fonts/*.woff2, public/robots.txt. Pasta public/images (imagens AI antigas) removida; src/components/landing/ removido.
+- src/app/styles.css + src/app/fonts.css: cópias fiéis do original + bloco de compat: `body{min-height:100vh;display:flex;flex-direction:column}` + `main{flex:1}` (footer colado no fundo) e `body{overflow-x:clip}` (elimina micro-overflow de 2px das imagens rotacionadas no mobile).
+- globals.css NÃO importado no layout (decisão deliberada): sem preflight do Tailwind, os estilos UA + CSS original renderizam idênticos ao Vite original.
+- src/lib/content.ts e src/lib/comercial.ts: port TS do conteúdo (preço R$ 19,90; checkoutUrl vazia → botão desabilitado "Compra disponível em breve", comportamento fiel ao original).
+- src/app/page.tsx: 'use client', port fiel do App.jsx — Button, PreviewRail (scroll suave + modal de zoom com imagem "originais"), ProductShowcase (capa + folhas + mockup de celular clicável), CheckoutButton, todas as seções (hero, facts dourada, pain, previews, method 3 passos, inside, offer com price-card, FAQ em <details> nativo, footer).
+- src/app/layout.tsx: lang pt-BR, metadata do index.html original (title "Livro dos Sonhos | Significados, bichos e números", description, favicon SVG dourado data-URI, themeColor #111111, viewport), imports fonts.css + styles.css. Toaster/fontes antigas removidos.
+- API /api/leads e model Lead mantidos (invisíveis na página; uso futuro).
+- `bun run lint`: sem erros nem warnings.
+
+Stage Summary:
+- Design original do usuário aplicado com fidelidade total no Next.js: mesmas classes CSS, mesmos componentes, mesmos textos, mesmas imagens reais e fontes locais. Apenas 3 regras de compat adicionadas (footer fixo + clip de overflow), sem alterar o visual.
+
+---
+Task ID: 5
+Agent: main-orchestrator (Z.ai Code)
+Task: Verificação end-to-end do design aplicado (Agent Browser + VLM)
+
+Work Log:
+- Dev.log: GET / 200 contínuo, compilação limpa, sem erros.
+- Título/metadata corretos; zero erros de página e console.
+- Desktop 1440px: hero, rail, steps, offer, price-card e footer renderizados — VLM confirmou: todas as imagens carregando, sem sobreposição/corte de texto, "no defects".
+- Interações: botões do rail rolam (scrollLeft 289); modal de zoom abre com imagem original (dialog "Página ampliada: Verbetes da letra A") e fecha com Esc; modal do celular abre (dialog "Verbete ampliado"); FAQ <details> expande (open=true, resposta com altura); botão de checkout corretamente desabilitado ("COMPRA DISPONÍVEL EM BREVE" — checkoutUrl vazia no comercial.js original).
+- Mockup do celular renderiza página real do dicionário (verbetes "Abacate, Abacaxi") confirmado via VLM.
+- Price card verificado: R$ 19,90 grande, checklist legível, botão cinza desabilitado.
+- Mobile 390x844: hero sem sobreposições; overflow horizontal de 2px (inerente às imagens rotacionadas do design original) eliminado com overflow-x:clip — window.scrollTo(50,0) resulta scrollX=0.
+- Rodapé: footerTop=694, footerBottom=844 (= fundo exato do viewport), disclaimer totalmente visível, scroll no máximo.
+- Fontes: Fira 400/700 e FiraCondensed 800 "loaded" (document.fonts), woff2 servidos com 200 de /fonts/; H1 computa "FiraCondensed, Fira, sans-serif".
+- Screenshots de verificação removidos; navegador fechado.
+
+Stage Summary:
+- Página do usuário aplicada e 100% funcional: visual fiel ao zip original, interações testadas (rail, modais, FAQ), mobile sem overflow, footer no fundo, fontes e imagens reais carregando, lint limpo, dev.log sem erros.

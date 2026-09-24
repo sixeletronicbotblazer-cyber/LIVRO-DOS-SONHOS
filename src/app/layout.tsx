@@ -1,70 +1,33 @@
-import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
+import type { Metadata, Viewport } from 'next'
+import './fonts.css'
+import './styles.css'
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
-});
+const FAVICON =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23111111'/%3E%3Cpath d='M16 15h14c5 0 8 2 10 5 2-3 5-5 10-5v33c-5 0-8 1-10 4-2-3-5-4-10-4H16z' fill='none' stroke='%23F6C945' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M40 20v32' stroke='%23F6C945' stroke-width='4'/%3E%3C/svg%3E"
 
 export const metadata: Metadata = {
-  title: "Livro dos Sonhos | Decifre as Mensagens dos Seus Sonhos",
+  title: 'Livro dos Sonhos | Significados, bichos e números',
   description:
-    "O guia definitivo de interpretação dos sonhos com mais de 500 símbolos explicados. Aprenda a ler o que sua mente tenta te dizer enquanto você dorme — com técnica, psicologia e 18 anos de pesquisa. Oferta de lançamento: 50% OFF por tempo limitado.",
-  keywords: [
-    "livro dos sonhos",
-    "interpretação de sonhos",
-    "significado dos sonhos",
-    "dicionário de sonhos",
-    "sonhos recorrentes",
-    "pesadelos",
-  ],
-  authors: [{ name: "Helena Vasconcelos" }],
+    'Sonhou? Consulte significados, bichos e números associados no Livro dos Sonhos. Veja páginas reais do livro antes de decidir.',
   icons: {
-    icon: "/images/favicon-icon.png",
+    icon: FAVICON,
   },
-  openGraph: {
-    title: "Livro dos Sonhos | Decifre as Mensagens dos Seus Sonhos",
-    description:
-      "Mais de 500 símbolos explicados. O guia definitivo para decifrar o que seus sonhos tentam te dizer.",
-    siteName: "Livro dos Sonhos",
-    type: "website",
-    locale: "pt_BR",
-  },
-};
+}
+
+export const viewport: Viewport = {
+  themeColor: '#111111',
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-[#160d26] text-[#f3ecff]`}
-      >
-        {children}
-        <Toaster
-          theme="dark"
-          position="top-center"
-          closeButton
-          toastOptions={{
-            style: {
-              background: "#1f1433",
-              border: "1px solid rgba(245, 197, 66, 0.25)",
-              color: "#f3ecff",
-            },
-          }}
-        />
-      </body>
+    <html lang="pt-BR">
+      <body>{children}</body>
     </html>
-  );
+  )
 }
