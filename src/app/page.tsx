@@ -107,14 +107,15 @@ function ProductShowcase() {
   return (
     <>
       <div className="offer-visual" aria-label="Capa, páginas reais e visualização do livro no celular">
+        <img className="offer-photo" src="/assets/offer-mockup-v3.webp" alt="Livro dos Sonhos em uma composição fotográfica" loading="lazy" />
+        <div className="offer-cover-mobile">
+          <img src="/assets/capa.webp" alt="Capa original do Livro dos Sonhos" loading="lazy" />
+        </div>
         <div className="offer-leaf offer-leaf--one">
           <img src="/assets/indice.webp" alt="" aria-hidden="true" loading="lazy" />
         </div>
         <div className="offer-leaf offer-leaf--two">
           <img src="/assets/tabela.webp" alt="" aria-hidden="true" loading="lazy" />
-        </div>
-        <div className="offer-cover">
-          <img src="/assets/capa.webp" alt="Capa real do Livro dos Sonhos" loading="lazy" />
         </div>
         <button className="phone" type="button" onClick={() => setOpen(true)} aria-label="Ampliar página real mostrada no celular">
           <span className="phone-speaker" aria-hidden="true" />
@@ -136,6 +137,40 @@ function ProductShowcase() {
   )
 }
 
+function ReadingPhone() {
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [open])
+  return (
+    <>
+      <button className="reading-phone" type="button" onClick={() => setOpen(true)} aria-label="Ampliar a página real mostrada no celular">
+        <img className="reading-phone-frame" src="/assets/phone-frame-v1.webp" alt="" aria-hidden="true" loading="lazy" />
+        <span className="reading-phone-page">
+          <img src="/assets/verbete-a.webp" alt="" loading="lazy" />
+        </span>
+      </button>
+      {open && (
+        <div className="modal" role="dialog" aria-modal="true" aria-label="Página do livro ampliada" onClick={() => setOpen(false)}>
+          <button className="modal-close" type="button" onClick={() => setOpen(false)} aria-label="Fechar página ampliada">
+            <X />
+          </button>
+          <img
+            src="/assets/originais/verbete-a.webp"
+            alt="Página real do Livro dos Sonhos com interpretações, bichos e números"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function Page() {
   return (
     <>
@@ -146,7 +181,7 @@ export default function Page() {
             <div className="hero-copy">
               <p className="eyebrow">{content.name.toUpperCase()}</p>
               <h1 id="hero-title">
-                Sonhou? <em>Vá direto ao significado,</em> ao bicho e aos números.
+                Acordou lembrando do sonho? <em>Veja o bicho e os números</em> antes de jogar.
               </h1>
               <p className="hero-lead">{content.subheadline}</p>
               <ul className="hero-bullets">
@@ -162,14 +197,14 @@ export default function Page() {
             </div>
             <div className="hero-media" aria-label="Capa e páginas reais do Livro dos Sonhos">
               <div className="hero-stage">
-                <div className="hero-sheet hero-sheet--left">
-                  <img src="/assets/indice.webp" alt="" aria-hidden="true" />
-                </div>
-                <div className="hero-sheet hero-sheet--right">
-                  <img src="/assets/verbete-a.webp" alt="" aria-hidden="true" />
-                </div>
-                <div className="hero-book">
-                  <img src="/assets/capa.webp" alt="Capa original do Livro dos Sonhos com tigre, arara e serpente" fetchPriority="high" />
+                <img
+                  className="hero-art"
+                  src="/assets/hero-mockup-v3.webp"
+                  alt="Mockup do Livro dos Sonhos com a capa do tigre, índice e um celular para consulta"
+                  fetchPriority="high"
+                />
+                <div className="hero-screen" aria-hidden="true">
+                  <img src="/assets/verbete-a.webp" alt="" />
                 </div>
               </div>
               <div className="page-marker">
@@ -193,16 +228,16 @@ export default function Page() {
 
         <section className="section pain">
           <div className="container center narrow">
-            <span className="section-kicker">O SONHO FICOU NA CABEÇA?</span>
-            <h2>Você lembra do sonho. Por que perder tempo procurando em tabelas espalhadas?</h2>
+            <span className="section-kicker">DO SONHO À CONSULTA</span>
+            <h2>Sonhou com um animal, uma pessoa ou uma situação e quer saber o que consultar?</h2>
             <p>
-              Abra um só livro, encontre a palavra no índice e veja o que o verbete registra: interpretação, bicho e números associados quando
-              aparecem.
+              Procure o que apareceu no sonho pelo índice. No verbete, você encontra a interpretação e as associações de bicho e números
+              registradas no livro para consultar antes da sua jogada.
             </p>
             <div className="pain-chips">
-              <span>O que significa?</span>
-              <span>Qual é o bicho?</span>
-              <span>Onde estão os números?</span>
+              <span>O que meu sonho significa?</span>
+              <span>Qual bicho aparece?</span>
+              <span>Quais são os números?</span>
             </div>
             <p className="pain-bridge">Abra o índice. Ache a palavra. Consulte o verbete.</p>
           </div>
@@ -245,6 +280,37 @@ export default function Page() {
           </div>
         </section>
 
+        <section className="section mobile-reading" aria-labelledby="mobile-reading-title">
+          <div className="container mobile-reading-grid">
+            <div className="mobile-reading-copy">
+              <span className="section-kicker">CONSULTE PELO CELULAR</span>
+              <h2 id="mobile-reading-title">Seu Livro dos Sonhos vai com você no telefone.</h2>
+              <p>
+                Depois de adquirir e receber o arquivo digital, basta abrir o PDF no leitor do celular. Procure a letra do que sonhou no
+                índice, vá ao verbete e amplie a página com os dedos para ler o significado, o bicho e os números.
+              </p>
+              <ul>
+                <li>
+                  <Check size={19} /> Abra o arquivo no celular quando quiser consultar.
+                </li>
+                <li>
+                  <Check size={19} /> Amplie as páginas para ler os detalhes.
+                </li>
+                <li>
+                  <Check size={19} /> Se preferir, imprima e encaderne por conta própria.
+                </li>
+              </ul>
+              <Button href="#oferta" tone="dark">
+                Ver o livro digital
+              </Button>
+            </div>
+            <div className="mobile-reading-visual">
+              <ReadingPhone />
+              <span className="mobile-reading-caption">Página real do livro na tela. Toque para ampliar.</span>
+            </div>
+          </div>
+        </section>
+
         <section className="section inside">
           <div className="container inside-grid">
             <div className="inside-media">
@@ -255,8 +321,8 @@ export default function Page() {
               <span className="section-kicker">UM LIVRO PARA CONSULTAR</span>
               <h2>O que vem no livro?</h2>
               <p>
-                Tenha as páginas à mão no celular quando um sonho ficar na cabeça. Se preferir uma cópia em papel, o formato A4 permite imprimir
-                e encadernar por conta própria.
+                Você recebe o arquivo digital em formato A4, com índice, tabela e verbetes para consultar. Se quiser uma cópia em papel,
+                pode imprimir e encadernar por conta própria.
               </p>
               <ul>
                 {content.included.map((item) => (
@@ -277,10 +343,10 @@ export default function Page() {
           <div className="container offer-grid">
             <div className="offer-copy">
               <span className="section-kicker">LIVRO DOS SONHOS</span>
-              <h2>Da próxima vez que acordar lembrando de um sonho, já saiba onde procurar.</h2>
+              <h2>O sonho ficou na memória? Consulte o verbete antes de escolher sua jogada.</h2>
               <p>
-                Abra no celular, vá ao índice e consulte o significado, o bicho e as associações que o livro registra. As páginas são A4 e
-                também podem ser impressas por você.
+                Receba o livro digital, abra no celular e procure o que sonhou no índice. Veja a interpretação, o bicho e os números
+                associados que o livro registra. As páginas A4 também podem ser impressas por você.
               </p>
               <div className="offer-inclusions">
                 <span>
@@ -299,7 +365,7 @@ export default function Page() {
               <article className="price-card">
                 <p className="price-label">LIVRO DIGITAL COMPLETO</p>
                 <h3>Livro dos Sonhos</h3>
-                <p className="price-description">Leia no celular ou imprima e encaderne por conta própria.</p>
+                <p className="price-description">Arquivo digital para abrir e ampliar no celular. Também pode ser impresso por conta própria.</p>
                 <ul className="price-details">
                   <li>120 páginas em formato A4</li>
                   <li>Índice alfabético e tabela dos 25 bichos</li>
