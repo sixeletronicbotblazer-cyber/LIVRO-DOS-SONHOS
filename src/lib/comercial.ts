@@ -1,6 +1,6 @@
 export const comercial = {
   price: 'R$ 19,90',
-  checkoutUrl: 'https://go.perfectpay.com.br/PPU38CQGG7H',
+  checkoutUrl: 'https://pay.cakto.com.br/s859tjs_1137379',
   access: '',
   guarantee: '',
   supportEmail: '',

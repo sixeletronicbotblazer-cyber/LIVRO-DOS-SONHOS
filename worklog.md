@@ -185,3 +185,18 @@ Stage Summary:
 - Popup de prova social funcionando conforme especificação InfoApp adaptado à identidade Livro dos Sonhos (grafite/dourado).
 - Checkout ativo via PerfectPay: https://go.perfectpay.com.br/PPU38CQGG7H
 - Projeto publicado no GitHub: https://github.com/sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS.git (branch main)
+
+---
+Task ID: checkout-swap-1
+Agent: main (Z.ai Code)
+Task: Trocar o link de checkout (PerfectPay → Cakto)
+
+Work Log:
+- comercial.ts: checkoutUrl alterado de https://go.perfectpay.com.br/PPU38CQGG7H para https://pay.cakto.com.br/s859tjs_1137379
+- Confirmado via grep que comercial.checkoutUrl é a única fonte do link de checkout (usado apenas no botão principal da oferta).
+- Verificado no navegador: botão "QUERO ACESSAR O LIVRO DOS SONHOS" aponta para o novo link Cakto (tag A, href correto).
+- Commit + push para o GitHub (branch main).
+
+Stage Summary:
+- Checkout ativo via Cakto: https://pay.cakto.com.br/s859tjs_1137379
+- Nenhuma outra alteração na página.
