@@ -34,23 +34,6 @@ export const content = {
   offer: {
     eyebrow: 'ACESSO IMEDIATO',
     sub: 'Consulte rapidamente o significado dos seus sonhos sempre que quiser, de forma prática e organizada.',
-    receives: [
-      'Livro dos Sonhos digital completo',
-      '120 páginas A4 para consulta',
-      'Interpretações com bichos e números associados',
-      'Índice alfabético organizado para encontrar com facilidade',
-      'Consulta prática direto pelo celular',
-      'Acesso digital após a compra',
-    ],
-    findLead: 'Sonhos com pessoas, animais, objetos, lugares e situações do dia a dia. Alguns exemplos:',
-    findTags: ['Água', 'Dentes', 'Bebê', 'Cobra', 'Casa', 'Dinheiro', 'Morte', 'Casamento', 'Gravidez', 'Viagem', 'Perseguição'],
-    findMore: 'E muitos outros significados para consultar.',
-    why: [
-      'Tudo em um só material, sem ficar pesquisando em vários lugares',
-      'Acesso direto do celular, sempre que precisar',
-      'Encontra o que procura com mais rapidez',
-      'Ideal para conferir assim que acordar curioso com o sonho',
-    ],
     // Estrutura pronta: adicione itens aqui para exibir o bloco "Bônus inclusos" na oferta.
     // Ex.: { title: 'Diário dos Sonhos — 30 dias', lead: 'para registrar e acompanhar seus sonhos' }
     bonus: [] as { title: string; lead: string }[],

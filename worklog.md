@@ -148,3 +148,20 @@ Work Log:
 
 Stage Summary:
 - Caixa da oferta transformada em estrutura persuasiva InfoApp sem tocar no resto da página: valor (o que recebe) → conteúdo (o que encontra, com tags de exemplos) → benefício (por que facilita) → [bônus pronto p/ ativar via content.ts] → preço R$ 19,90 em máximo contraste + CTA. Identidade preto/grafite + dourado + card papel preservada; mobile-first escaneável (1 col, bullets curtos, botão dominante); verificado em 8 larguras com zero overflow e zero erros.
+
+---
+Task ID: offer-simplify-1
+Agent: main (Z.ai Code)
+Task: Remover os blocos de texto repetitivos e longos da seção de oferta (pedido do usuário: "pode tirar isso... está repetitivo e longo")
+
+Work Log:
+- Removidos do page.tsx os três blocos "offer-block": "O que você recebe hoje" (lista de 6 itens), "O que você encontra no livro" (lead + 11 tags + "E muitos outros") e "Por que isso facilita sua consulta" (4 itens).
+- Removido o import do ícone Sparkles (ficou sem uso após a remoção do bloco "why").
+- Limpo o content.ts: removidos os campos offer.receives, offer.findLead, offer.findTags, offer.findMore e offer.why (mantidos eyebrow, sub e bonus).
+- Limpo o styles.css: removidas as regras .offer-receive-list, .offer-find-lead, .offer-find-tags, .offer-find-more, .offer-why-list (desktop e mobile). Mantidas .offer-block/.offer-bonus (bloco de bônus continua pronto para uso) e toda a zona de preço.
+- Estrutura final da oferta: cabeçalho (eyebrow + título + sub) → visual do produto (ProductShowcase) → bloco de bônus (condicional, atualmente vazio) → zona de preço (label, R$ 19,90, pagamento único, botão de checkout, microcopy).
+- Verificações: bun run lint limpo; agent-browser confirmou remoção (nenhum dos textos removidos presente) e preservação dos elementos-chave; screenshots desktop + mobile (390px) analisados via VLM sem problemas de layout; sem erros de console/runtime no dev.log.
+
+Stage Summary:
+- Oferta enxuta e direta: promessa → prova visual → preço → CTA. As informações removidas continuam disponíveis em outras seções da página (hero bullets, facts, "O que vem no livro?", seção de consulta pelo celular), eliminando a redundância.
+- Bloco de bônus permanece estruturado e pronto para ativação via content.ts (array offer.bonus), sem alterar preço nem checkout.

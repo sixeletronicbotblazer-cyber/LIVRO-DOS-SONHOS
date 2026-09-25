@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, Gift, Search, Smartphone, Sparkles, X } from 'lucide-react'
+import { ArrowRight, Check, Gift, Search, Smartphone, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
 
@@ -520,8 +520,8 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Caixa da oferta — estrutura persuasiva estilo InfoApp: entregáveis,
-            tipos de consulta e benefícios ANTES do preço. Mesmo checkout/mesmo preço. */}
+        {/* Caixa da oferta — enxuta: promessa + visual do produto + preço.
+            Os entregáveis detalhados ficam nas seções anteriores da página. */}
         <section className="section offer" id="oferta">
           <div className="container">
             <article className="offer-box">
@@ -534,38 +534,6 @@ export default function Page() {
               </header>
               <div className="offer-box-visual">
                 <ProductShowcase />
-              </div>
-              <div className="offer-block">
-                <h3>O que você recebe hoje</h3>
-                <ul className="offer-receive-list">
-                  {content.offer.receives.map((item) => (
-                    <li key={item}>
-                      <Check size={17} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="offer-block">
-                <h3>O que você encontra no livro</h3>
-                <p className="offer-find-lead">{content.offer.findLead}</p>
-                <div className="offer-find-tags">
-                  {content.offer.findTags.map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-                <p className="offer-find-more">{content.offer.findMore}</p>
-              </div>
-              <div className="offer-block">
-                <h3>Por que isso facilita sua consulta</h3>
-                <ul className="offer-why-list">
-                  {content.offer.why.map((item) => (
-                    <li key={item}>
-                      <Sparkles size={16} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
               {content.offer.bonus.length > 0 && (
                 <div className="offer-block offer-bonus">

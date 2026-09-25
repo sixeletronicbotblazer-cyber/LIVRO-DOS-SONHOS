@@ -475,16 +475,6 @@ body{overflow-x:clip}
 .offer-box-visual .offer-visual{margin:0 auto}
 .offer-block{border-top:1px solid #ede6d6;margin-top:22px;padding-top:22px}
 .offer-block h3{color:#17191b;margin:0 0 14px;font-size:1.07rem;font-weight:800;letter-spacing:-.012em}
-.offer-receive-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 26px;margin:0;padding:0;list-style:none}
-.offer-receive-list li{display:flex;align-items:flex-start;gap:10px;color:#2c3033;font-size:.97rem;font-weight:600;line-height:1.45}
-.offer-receive-list li svg{color:#8c6712;flex:none;margin-top:2px}
-.offer-find-lead{color:#5c5851;margin:0 0 13px;font-size:.94rem;line-height:1.55}
-.offer-find-tags{flex-wrap:wrap;gap:8px;display:flex}
-.offer-find-tags span{background:#f6f0df;border:1px solid #e4d6a9;color:#584613;border-radius:999px;padding:7px 14px;font-size:.87rem;font-weight:700}
-.offer-find-more{color:#7c5c0e;margin:13px 0 0;font-size:.92rem;font-weight:700}
-.offer-why-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 26px;margin:0;padding:0;list-style:none}
-.offer-why-list li{display:flex;align-items:flex-start;gap:10px;color:#2c3033;font-size:.95rem;font-weight:600;line-height:1.45}
-.offer-why-list li svg{color:#8c6712;flex:none;margin-top:2px}
 .offer-bonus{background:#f9f0d5;border:1px solid #e9d9a9;border-radius:16px;padding:16px 18px}
 .offer-bonus h3{color:#6f510d;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 .offer-bonus h3 svg{color:#8c6712}
@@ -510,12 +500,6 @@ body{overflow-x:clip}
 .offer-box-head p{font-size:.97rem}
 .offer-block{margin-top:18px;padding-top:18px}
 .offer-block h3{font-size:1.02rem}
-.offer-receive-list{grid-template-columns:1fr;gap:10px}
-.offer-why-list{grid-template-columns:1fr;gap:9px}
-.offer-receive-list li,.offer-why-list li{font-size:.92rem}
-.offer-find-lead{font-size:.9rem}
-.offer-find-tags span{padding:6px 12px;font-size:.83rem}
-.offer-find-more{font-size:.88rem}
 .offer-price-zone{margin-top:20px;padding:22px 12px 18px}
 .offer-price-zone .price strong{font-size:clamp(2.35rem,10.8vw,3.3rem)}
 .offer-price-zone .price small{font-size:.94rem}
