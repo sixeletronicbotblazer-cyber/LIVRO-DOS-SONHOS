@@ -427,3 +427,102 @@ body{min-height:100vh;display:flex;flex-direction:column}
 main{flex:1}
 /* --- Ajuste: evita micro-overflow horizontal de imagens rotacionadas no mobile --- */
 body{overflow-x:clip}
+
+/* ============================================================
+   OTIMIZAÇÃO DE CONVERSÃO — camada final (carrossel marquee,
+   oferta v2, em dourado pontual, CTA flutuante mobile)
+   ============================================================ */
+
+/* --- Carrossel infinito das prévias --- */
+.marquee-hint{color:#d9d3c9;margin:0 0 14px;font-size:.92rem}
+.marquee{position:relative;overflow:hidden;cursor:grab;touch-action:pan-y;padding:4px 0 12px}
+.marquee:active{cursor:grabbing}
+.marquee,.marquee *{user-select:none;-webkit-user-select:none}
+.marquee img{-webkit-user-drag:none}
+.marquee-track{display:flex;gap:20px;width:max-content;will-change:transform}
+.marquee-track .preview-card{flex:0 0 272px}
+.previews .preview-action{margin-top:26px}
+@media (width<=920px){
+.marquee{margin-inline:calc(50% - 50vw);padding:4px 10px 10px}
+}
+@media (width<=600px){
+.marquee{padding:2px 10px 8px}
+.marquee-track{gap:14px}
+.marquee-track .preview-card{flex-basis:min(68vw,300px)}
+}
+
+/* --- Destaque dourado pontual em títulos estratégicos --- */
+.previews h2 em{color:#ffd44b;font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:.88em;letter-spacing:-.03em}
+.mobile-reading-copy h2 em{color:#7c5c0e;font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:.88em}
+
+/* --- Nota "nada para carregar" (consulta pelo celular) --- */
+.mobile-reading-note{display:flex;align-items:center;gap:9px;background:#f7ecd1;border:1px solid #e9d9a9;border-radius:12px;padding:11px 14px;color:#5c4a14;font-size:.92rem;font-weight:600;margin:0 0 22px;max-width:560px}
+.mobile-reading-note svg{color:#8c6712;flex:none}
+
+/* --- Destaques na lista "O que vem no livro?" --- */
+.inside-copy li strong{color:#1a1d1f;font-weight:800}
+
+/* --- Oferta v2 (fechamento principal) --- */
+.offer-v2-head{text-align:center;max-width:780px;margin:0 auto 46px}
+.offer-eyebrow{color:var(--gold);letter-spacing:.14em;border:1px solid #8f762d;border-radius:999px;padding:8px 16px;font-size:.78rem;font-weight:700;display:inline-block}
+.offer-v2-head h2{color:#fff;max-width:660px;margin:24px auto 0}
+.offer-v2-head h2 em{color:#ffd44b;font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:.88em;letter-spacing:-.03em}
+.offer-v2-head p{color:#ddd9d1;max-width:580px;margin:18px auto 0;font-size:1.08rem;line-height:1.62}
+.offer-v2-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:38px;align-items:start}
+.offer-v2-left{min-width:0}
+.offer-v2-right{min-width:0}
+.offer-receive{background:#fffefc;border:1px solid #e7e1d1;border-radius:18px;padding:24px 24px 20px;margin-top:24px;box-shadow:0 16px 36px #00000029}
+.offer-receive h3{color:#17191b;letter-spacing:-.01em;margin:0 0 16px;font-size:1.06rem;font-weight:800}
+.offer-receive ul{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.offer-receive li{display:flex;align-items:flex-start;gap:10px;color:#2b2f32;font-size:.99rem;font-weight:600;line-height:1.42}
+.offer-receive li svg{color:#8c6712;flex:none;margin-top:2px}
+.how-use{background:#1e2124;border:1px solid #3b4045;border-radius:18px;padding:20px 22px 22px;margin-bottom:24px}
+.how-use-title{color:var(--gold);letter-spacing:.13em;font-size:.78rem;font-weight:700;display:block}
+.how-use-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:16px}
+.how-step{position:relative;background:#26292c;border:1px solid #3b4045;border-radius:13px;padding:15px 15px 14px}
+.how-step:not(:last-child):after{content:"→";color:var(--gold);position:absolute;top:22px;right:-18px;font-size:1rem;font-weight:700}
+.how-step-number{background:var(--gold);color:#1d1b16;width:24px;height:24px;border-radius:50%;place-items:center;font-size:.8rem;font-weight:800;display:grid}
+.how-step strong{color:#fff;margin:9px 0 5px;font-size:1rem;font-weight:700;display:block}
+.how-step p{color:#c6cacc;margin:0;font-size:.83rem;line-height:1.45}
+.price-card--v2{border-top:6px solid var(--gold);border-radius:22px;padding:34px 34px 28px;box-shadow:0 28px 70px #00000059}
+.price-card--v2 .price{display:block;margin:18px 0 0;padding-top:20px}
+.price-card--v2 .price strong{display:block;white-space:nowrap;letter-spacing:-.05em;line-height:1;font-size:clamp(3.5rem,7vw,4.75rem)}
+.price-card--v2 .price small{display:block;color:#615b52;margin-top:9px;font-size:.98rem;font-weight:600}
+.price-note{color:#615b52;margin:16px 0 0;font-size:.95rem}
+.price-microcopy{color:#8a867e;text-align:center;margin:13px 0 0;font-size:.8rem}
+.button--checkout-main{width:100%;min-height:70px;margin-top:20px;border-radius:18px;font-size:1.02rem;letter-spacing:.02em}
+.button--checkout-main:disabled{border-radius:18px;padding:17px 24px}
+@media (width<=920px){
+.offer-v2-head{margin-bottom:32px}
+.offer-v2-grid{grid-template-columns:1fr;gap:26px}
+}
+@media (width<=700px){
+.how-use{padding:16px 16px 18px}
+.how-use-steps{grid-template-columns:1fr;gap:10px}
+.how-step{display:grid;grid-template-columns:26px 1fr;column-gap:12px;row-gap:3px;padding:12px 13px}
+.how-step-number{grid-column:1;grid-row:1}
+.how-step strong{grid-column:2;grid-row:1;display:flex;align-items:center;margin:0}
+.how-step p{grid-column:2;grid-row:2}
+.how-step:not(:last-child):after{content:none}
+}
+@media (width<=600px){
+.price-card--v2{padding:28px 18px 22px}
+.price-card--v2 .price strong{font-size:clamp(3.15rem,12vw,3.65rem)}
+.price-note{font-size:.9rem}
+.button--checkout-main{min-height:64px;font-size:.94rem}
+.offer-receive{padding:20px 18px 16px}
+.offer-receive li{font-size:.94rem}
+.offer-v2-head p{font-size:1rem}
+.mobile-reading-note{font-size:.88rem}
+}
+
+/* --- CTA flutuante (apenas mobile) --- */
+.floating-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;align-items:center;justify-content:space-between;gap:14px;background:#141618f0;border-top:1px solid #3f4348;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:11px 16px calc(11px + env(safe-area-inset-bottom,0px));transform:translateY(110%);visibility:hidden;transition:transform .3s ease,visibility 0s .3s}
+.floating-cta.is-visible{transform:translateY(0);visibility:visible;transition:transform .3s ease}
+.floating-cta-info{display:flex;flex-direction:column;line-height:1.28;min-width:0}
+.floating-cta-name{color:#f2f0ec;letter-spacing:.03em;font-size:.8rem;font-weight:700}
+.floating-cta-price{color:var(--gold);font-size:1.02rem;font-weight:800}
+.floating-cta-btn{background:linear-gradient(120deg,#ffe477 0%,#ffd137 54%,#ffb91f 100%);color:#1d1b16;border-radius:14px;min-height:46px;padding:12px 18px;font-size:.84rem;font-weight:800;letter-spacing:.03em;text-decoration:none;flex:none;box-shadow:0 8px 20px #ffbe2640}
+@media (width<=767px){
+.floating-cta{display:flex}
+}

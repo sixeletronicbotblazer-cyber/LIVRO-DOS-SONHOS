@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
+import { ArrowRight, Check, Search, Smartphone, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
 
@@ -24,45 +24,165 @@ function Button({
   )
 }
 
-function PreviewRail() {
-  const rail = useRef<HTMLDivElement>(null)
-  const [selected, setSelected] = useState<SelectedPage>(null)
+function useEscapeKey(active: boolean, onClose: () => void) {
   useEffect(() => {
-    if (!selected) return
+    if (!active) return
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSelected(null)
+      if (event.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', closeOnEscape)
     return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [active, onClose])
+}
+
+/* Carrossel horizontal infinito (marquee) com arraste manual e autoplay.
+   Movimento contínuo via transform/translate3d em requestAnimationFrame:
+   - loop real (posição sempre módulo da largura de um conjunto de cards);
+   - pausa durante drag, com modal aberto, fora da viewport e no hover (desktop);
+   - retoma automática ~1,4s após o fim da interação;
+   - volta completa em 18–25s, independentemente da largura. */
+function MarqueeRail() {
+  const track = useRef<HTMLDivElement>(null)
+  const state = useRef({
+    pos: 0,
+    dragging: false,
+    resumeAt: 0,
+    lastDx: 0,
+    startX: 0,
+    startPos: 0,
+    modalOpen: false,
+    inView: true,
+    mouseSeen: false,
+  })
+  const [selected, setSelected] = useState<SelectedPage>(null)
+
+  useEffect(() => {
+    state.current.modalOpen = !!selected
   }, [selected])
-  function scroll(direction: number) {
-    rail.current?.scrollBy({ left: direction * Math.min(340, rail.current.clientWidth * 0.8), behavior: 'smooth' })
+
+  useEscapeKey(!!selected, () => setSelected(null))
+
+  useEffect(() => {
+    const el = track.current
+    if (!el) return
+    const s = state.current
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const canHover = window.matchMedia('(hover: hover)').matches
+    let raf = 0
+    let last = performance.now()
+    let half = 1
+    let lastWritten = -1
+
+    const measure = () => {
+      half = Math.max(1, el.scrollWidth / 2)
+    }
+    measure()
+    window.addEventListener('resize', measure)
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        s.inView = entry.isIntersecting
+      },
+      { rootMargin: '120px 0px 120px 0px' }
+    )
+    io.observe(el)
+
+    const tick = (now: number) => {
+      const dt = Math.min(64, now - last) / 1000
+      last = now
+      const paused = s.dragging || s.modalOpen || !s.inView || now < s.resumeAt
+      const hovering = !reduced && (canHover || s.mouseSeen) && el.matches(':hover')
+      if (!reduced && !paused && !hovering) {
+        const duration = Math.min(25, Math.max(18, half / 80))
+        s.pos = (s.pos + (half / duration) * dt) % half
+      }
+      if (s.pos !== lastWritten) {
+        el.style.transform = `translate3d(${-s.pos}px,0,0)`
+        lastWritten = s.pos
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      io.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
+
+  function onPointerEnter(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === 'mouse') state.current.mouseSeen = true
   }
+
+  function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    const s = state.current
+    s.dragging = true
+    s.startX = event.clientX
+    s.startPos = s.pos
+    s.lastDx = 0
+    const onMove = (moveEvent: PointerEvent) => {
+      const st = state.current
+      if (!st.dragging) return
+      const dx = moveEvent.clientX - st.startX
+      st.lastDx = Math.abs(dx)
+      const h = Math.max(1, (track.current?.scrollWidth ?? 2) / 2)
+      st.pos = (((st.startPos - dx) % h) + h) % h
+    }
+    const onFinish = () => {
+      const st = state.current
+      if (!st.dragging) return
+      st.dragging = false
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onFinish)
+      window.removeEventListener('pointercancel', onFinish)
+      st.resumeAt = performance.now() + 1400
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onFinish)
+    window.addEventListener('pointercancel', onFinish)
+  }
+
+  function onDragStart(event: React.DragEvent<HTMLDivElement>) {
+    event.preventDefault()
+  }
+
+  function openCard(src: string, title: string) {
+    if (state.current.lastDx > 8) return
+    setSelected({ src, title })
+  }
+
+  const cards = [...content.gallery, ...content.gallery]
+
   return (
     <>
-      <div className="rail-controls">
-        <p>São páginas do arquivo real. Deslize para conferir.</p>
-        <div>
-          <button type="button" onClick={() => scroll(-1)} aria-label="Ver página anterior">
-            <ChevronLeft />
-          </button>
-          <button type="button" onClick={() => scroll(1)} aria-label="Ver próxima página">
-            <ChevronRight />
-          </button>
+      <div className="marquee" role="region" aria-label="Páginas reais do Livro dos Sonhos">
+        <div
+          className="marquee-track"
+          ref={track}
+          onPointerEnter={onPointerEnter}
+          onPointerDown={onPointerDown}
+          onDragStart={onDragStart}
+        >
+          {cards.map(([src, title, lead], index) => (
+            <button
+              className="preview-card"
+              key={`${src}-${index}`}
+              type="button"
+              onClick={() => openCard(src, title)}
+              aria-label={`Ampliar ${title}`}
+            >
+              <span className="preview-image">
+                <img src={src} alt={`Página real: ${title}`} draggable={false} />
+              </span>
+              <span className="preview-meta">
+                <strong>{title}</strong>
+                <small>{lead}</small>
+              </span>
+            </button>
+          ))}
         </div>
-      </div>
-      <div className="preview-rail" ref={rail} aria-label="Páginas reais do Livro dos Sonhos" tabIndex={0}>
-        {content.gallery.map(([src, title, lead]) => (
-          <button className="preview-card" key={src} type="button" onClick={() => setSelected({ src, title })} aria-label={`Ampliar ${title}`}>
-            <span className="preview-image">
-              <img src={src} alt={`Página real: ${title}`} loading="lazy" />
-            </span>
-            <span className="preview-meta">
-              <strong>{title}</strong>
-              <small>{lead}</small>
-            </span>
-          </button>
-        ))}
       </div>
       {selected && (
         <div className="modal" role="dialog" aria-modal="true" aria-label={`Página ampliada: ${selected.title}`} onClick={() => setSelected(null)}>
@@ -83,27 +203,20 @@ function PreviewRail() {
 function CheckoutButton() {
   if (!comercial.checkoutUrl)
     return (
-      <button className="button button--checkout" type="button" disabled>
+      <button className="button button--checkout button--checkout-main" type="button" disabled>
         Compra disponível em breve
       </button>
     )
   return (
-    <a className="button button--checkout" href={comercial.checkoutUrl} rel="noopener noreferrer">
-      Quero meu Livro dos Sonhos <ArrowRight size={20} aria-hidden="true" />
+    <a className="button button--checkout button--checkout-main" href={comercial.checkoutUrl} rel="noopener noreferrer">
+      QUERO ACESSAR O LIVRO DOS SONHOS <ArrowRight size={20} aria-hidden="true" />
     </a>
   )
 }
 
 function ProductShowcase() {
   const [open, setOpen] = useState(false)
-  useEffect(() => {
-    if (!open) return
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('keydown', closeOnEscape)
-    return () => document.removeEventListener('keydown', closeOnEscape)
-  }, [open])
+  useEscapeKey(open, () => setOpen(false))
   return (
     <>
       <div className="offer-visual" aria-label="Capa, páginas reais e visualização do livro no celular">
@@ -139,14 +252,7 @@ function ProductShowcase() {
 
 function ReadingPhone() {
   const [open, setOpen] = useState(false)
-  useEffect(() => {
-    if (!open) return
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('keydown', closeOnEscape)
-    return () => document.removeEventListener('keydown', closeOnEscape)
-  }, [open])
+  useEscapeKey(open, () => setOpen(false))
   return (
     <>
       <button className="reading-phone" type="button" onClick={() => setOpen(true)} aria-label="Ampliar a página real mostrada no celular">
@@ -168,6 +274,48 @@ function ReadingPhone() {
         </div>
       )}
     </>
+  )
+}
+
+/* Barra CTA fixa — apenas mobile. Aparece após o hero e some na oferta/rodapé. */
+function FloatingCta() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>('.hero')
+    const offer = document.getElementById('oferta')
+    const footer = document.querySelector('footer')
+    if (!hero || !offer || !footer) return
+    let pastHero = false
+    let offerNear = false
+    let footerNear = false
+    const update = () => setVisible(pastHero && !offerNear && !footerNear)
+    const observe = (el: Element, setter: (value: boolean) => void) => {
+      const io = new IntersectionObserver(([entry]) => {
+        setter(entry.isIntersecting)
+        update()
+      })
+      io.observe(el)
+      return io
+    }
+    const ioHero = observe(hero, (v) => (pastHero = !v))
+    const ioOffer = observe(offer, (v) => (offerNear = v))
+    const ioFooter = observe(footer, (v) => (footerNear = v))
+    return () => {
+      ioHero.disconnect()
+      ioOffer.disconnect()
+      ioFooter.disconnect()
+    }
+  }, [])
+  return (
+    <aside className={`floating-cta${visible ? ' is-visible' : ''}`} aria-hidden={!visible}>
+      <div className="floating-cta-info">
+        <span className="floating-cta-name">Livro dos Sonhos</span>
+        <span className="floating-cta-price">{comercial.price}</span>
+      </div>
+      <a className="floating-cta-btn" href="#oferta" tabIndex={visible ? 0 : -1}>
+        QUERO ACESSAR
+      </a>
+    </aside>
   )
 }
 
@@ -247,13 +395,16 @@ export default function Page() {
           <div className="container">
             <div className="section-heading">
               <span className="section-kicker">OLHE POR DENTRO</span>
-              <h2>Veja o livro de verdade antes de comprar.</h2>
+              <h2>
+                Veja o livro <em>de verdade</em> antes de comprar.
+              </h2>
               <p>Índice, tabela e páginas internas: cada prévia abaixo foi retirada do material real.</p>
             </div>
-            <PreviewRail />
+            <p className="marquee-hint">São páginas do arquivo real. Deslize para conferir.</p>
+            <MarqueeRail />
             <div className="center preview-action">
               <Button href="#oferta" tone="dark">
-                Ver o valor do livro
+                Quero consultar meus sonhos
               </Button>
             </div>
           </div>
@@ -284,7 +435,9 @@ export default function Page() {
           <div className="container mobile-reading-grid">
             <div className="mobile-reading-copy">
               <span className="section-kicker">CONSULTE PELO CELULAR</span>
-              <h2 id="mobile-reading-title">Seu Livro dos Sonhos vai com você no telefone.</h2>
+              <h2 id="mobile-reading-title">
+                Seu Livro dos Sonhos vai <em>com você no telefone</em>.
+              </h2>
               <p>
                 Depois de adquirir e receber o arquivo digital, basta abrir o PDF no leitor do celular. Procure a letra do que sonhou no
                 índice, vá ao verbete e amplie a página com os dedos para ler o significado, o bicho e os números.
@@ -300,6 +453,10 @@ export default function Page() {
                   <Check size={19} /> Se preferir, imprima e encaderne por conta própria.
                 </li>
               </ul>
+              <p className="mobile-reading-note">
+                <Smartphone size={16} aria-hidden="true" />
+                Nada para carregar ou levar — o livro fica disponível no seu celular.
+              </p>
               <Button href="#oferta" tone="dark">
                 Ver o livro digital
               </Button>
@@ -325,12 +482,36 @@ export default function Page() {
                 pode imprimir e encadernar por conta própria.
               </p>
               <ul>
-                {content.included.map((item) => (
-                  <li key={item}>
-                    <Check size={18} />
-                    {item}
-                  </li>
-                ))}
+                <li>
+                  <Check size={18} />
+                  <span>
+                    <strong>Livro digital de 120 páginas</strong> em formato A4
+                  </span>
+                </li>
+                <li>
+                  <Check size={18} />
+                  <span>
+                    <strong>Índice alfabético</strong> para localizar os verbetes
+                  </span>
+                </li>
+                <li>
+                  <Check size={18} />
+                  <span>
+                    <strong>Tabela dos 25 bichos</strong>, grupos e dezenas
+                  </span>
+                </li>
+                <li>
+                  <Check size={18} />
+                  <span>
+                    <strong>Interpretações</strong> com números associados
+                  </span>
+                </li>
+                <li>
+                  <Check size={18} />
+                  <span>
+                    Abra no celular ou <strong>imprima e encaderne</strong> por conta própria
+                  </span>
+                </li>
               </ul>
               <Button href="#oferta" tone="dark">
                 Ver o valor do livro
@@ -340,43 +521,73 @@ export default function Page() {
         </section>
 
         <section className="section offer" id="oferta">
-          <div className="container offer-grid">
-            <div className="offer-copy">
-              <span className="section-kicker">LIVRO DOS SONHOS</span>
-              <h2>O sonho ficou na memória? Consulte o verbete antes de escolher sua jogada.</h2>
-              <p>
-                Receba o livro digital, abra no celular e procure o que sonhou no índice. Veja a interpretação, o bicho e os números
-                associados que o livro registra. As páginas A4 também podem ser impressas por você.
-              </p>
-              <div className="offer-inclusions">
-                <span>
-                  <BookOpen size={19} /> 120 páginas para consultar
-                </span>
-                <span>
-                  <Search size={19} /> Índice de A a Z
-                </span>
-                <span>
-                  <Check size={19} /> Tabela dos 25 bichos
-                </span>
-              </div>
-            </div>
-            <div className="offer-right">
-              <ProductShowcase />
-              <article className="price-card">
-                <p className="price-label">LIVRO DIGITAL COMPLETO</p>
-                <h3>Livro dos Sonhos</h3>
-                <p className="price-description">Arquivo digital para abrir e ampliar no celular. Também pode ser impresso por conta própria.</p>
-                <ul className="price-details">
-                  <li>120 páginas em formato A4</li>
-                  <li>Índice alfabético e tabela dos 25 bichos</li>
-                  <li>Interpretações e números associados</li>
-                </ul>
-                <div className="price">
-                  <small>Pagamento único</small>
-                  <strong>{comercial.price}</strong>
+          <div className="container">
+            <header className="offer-v2-head">
+              <span className="offer-eyebrow">ACESSO IMEDIATO</span>
+              <h2>
+                Tenha o <em>Livro dos Sonhos</em> sempre com você
+              </h2>
+              <p>Consulte rapidamente o significado dos seus sonhos direto pelo celular sempre que acordar curioso para entender o que sonhou.</p>
+            </header>
+            <div className="offer-v2-grid">
+              <div className="offer-v2-left">
+                <ProductShowcase />
+                <div className="offer-receive">
+                  <h3>O que você recebe hoje:</h3>
+                  <ul>
+                    <li>
+                      <Check size={17} /> Livro dos Sonhos completo
+                    </li>
+                    <li>
+                      <Check size={17} /> Significados, bichos e números para consultar
+                    </li>
+                    <li>
+                      <Check size={17} /> Índice organizado para encontrar rapidamente o que procura
+                    </li>
+                    <li>
+                      <Check size={17} /> Acesso pelo celular
+                    </li>
+                    <li>
+                      <Check size={17} /> Leitura prática sempre que precisar
+                    </li>
+                    <li>
+                      <Check size={17} /> Acesso digital após a compra
+                    </li>
+                  </ul>
                 </div>
-                <CheckoutButton />
-              </article>
+              </div>
+              <div className="offer-v2-right">
+                <div className="how-use">
+                  <span className="how-use-title">COMO VOCÊ USA</span>
+                  <div className="how-use-steps">
+                    <div className="how-step">
+                      <span className="how-step-number">1</span>
+                      <strong>Sonhou</strong>
+                      <p>Você acorda lembrando de uma pessoa, lugar, situação, animal ou objeto.</p>
+                    </div>
+                    <div className="how-step">
+                      <span className="how-step-number">2</span>
+                      <strong>Procura</strong>
+                      <p>Abra o Livro dos Sonhos e encontre rapidamente o termo relacionado.</p>
+                    </div>
+                    <div className="how-step">
+                      <span className="how-step-number">3</span>
+                      <strong>Descobre</strong>
+                      <p>Leia os possíveis significados e interpretações relacionados ao seu sonho.</p>
+                    </div>
+                  </div>
+                </div>
+                <article className="price-card price-card--v2">
+                  <p className="price-label">ACESSO COMPLETO</p>
+                  <div className="price">
+                    <strong>{comercial.price}</strong>
+                    <small>Pagamento único. Sem assinatura.</small>
+                  </div>
+                  <p className="price-note">Receba seu acesso e consulte pelo celular.</p>
+                  <CheckoutButton />
+                  <p className="price-microcopy">Pagamento seguro • Acesso digital</p>
+                </article>
+              </div>
             </div>
           </div>
         </section>
@@ -407,6 +618,7 @@ export default function Page() {
           <p>Material digital de consulta. As associações apresentadas no livro não preveem resultados.</p>
         </div>
       </footer>
+      <FloatingCta />
     </>
   )
 }
