@@ -200,3 +200,17 @@ Work Log:
 Stage Summary:
 - Checkout ativo via Cakto: https://pay.cakto.com.br/s859tjs_1137379
 - Nenhuma outra alteração na página.
+
+---
+Task ID: clarity-1
+Agent: main (Z.ai Code)
+Task: Aplicar script do Microsoft Clarity no site (ID: ynmey7a3f2)
+
+Work Log:
+- Adicionado o snippet oficial do Clarity em src/app/layout.tsx via next/script com strategy="afterInteractive" (carregamento assíncrono pós-hidratação, não bloqueia a renderização) e id="ms-clarity".
+- Nenhuma outra alteração na página.
+- Verificação no navegador: window.clarity definido (function); script https://www.clarity.ms/tag/ynmey7a3f2 carregado (async) e resolvido para scripts.clarity.ms/0.8.70/clarity.js; beacons g.clarity.ms/collect retornando 204 (dados de sessão sendo transmitidos com sucesso); sem erros de console/página.
+- Lint limpo. Commit + push para o GitHub (branch main).
+
+Stage Summary:
+- Microsoft Clarity ativo no site para gravação de sessões e mapas de calor (projeto ynmey7a3f2), sem impacto no carregamento da página.
