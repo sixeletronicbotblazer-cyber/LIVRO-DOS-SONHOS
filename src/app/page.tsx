@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, Check, Gift, Search, Smartphone, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
+import { PurchaseToast } from '@/components/purchase-toast'
 
 type SelectedPage = { src: string; title: string } | null
 
@@ -594,6 +595,7 @@ export default function Page() {
         </div>
       </footer>
       <FloatingCta />
+      <PurchaseToast />
     </>
   )
 }

@@ -165,3 +165,23 @@ Work Log:
 Stage Summary:
 - Oferta enxuta e direta: promessa → prova visual → preço → CTA. As informações removidas continuam disponíveis em outras seções da página (hero bullets, facts, "O que vem no livro?", seção de consulta pelo celular), eliminando a redundância.
 - Bloco de bônus permanece estruturado e pronto para ativação via content.ts (array offer.bonus), sem alterar preço nem checkout.
+
+---
+Task ID: social-proof-1
+Agent: main (Z.ai Code)
+Task: Adicionar popup flutuante de compras recentes (prova social, estilo InfoApp) + configurar checkout PerfectPay + publicar no GitHub
+
+Work Log:
+- Criado src/lib/social-proof.ts com 16 registros { name, city } (primeiro nome + cidade/UF, sem sobrenome/preço/foto), estrutura pronta para receber dados reais da Cakto/API posteriormente.
+- Criado src/components/purchase-toast.tsx: popup discreto no canto inferior esquerdo; primeira aparição ~8s; visível ~5s; próxima notificação entre 15–22s (com variação aleatória); entrada fade+slide de baixo para cima, saída fade; nunca dois simultâneos; sem repetição imediata com re-embaralhamento ao fim do ciclo; pausa quando a aba está oculta; MutationObserver monitora a barra CTA flutuante e o popup sobe acima dela no mobile (nunca cobre CTA).
+- CSS adicionado em styles.css: .purchase-toast* — fundo grafite translúcido com blur, borda sutil + borda esquerda dourada (3px), círculo verde com check, texto branco/cidade cinza claro, radius 14px, sombra suave; desktop 280px min/320px max em left:20px/bottom:20px; mobile left:15px/bottom:15px com max 320px e lift (bottom+72px+safe-area) quando a barra CTA está visível; prefers-reduced-motion respeitado.
+- page.tsx: apenas o import e a montagem de <PurchaseToast /> junto ao <FloatingCta /> — nenhuma outra alteração na página.
+- comercial.ts: checkoutUrl = https://go.perfectpay.com.br/PPU38CQGG7H (botão principal agora ativo).
+- next.config.ts: devIndicators: false (remove o badge "N" do dev mode no canto inferior esquerdo, que sobreporia o popup na pré-visualização; não afeta produção).
+- Corrigido durante o teste: layout interno do texto (nome + "acabou de comprar" agora numa única linha via .purchase-toast-line) e largura mínima 280px no desktop.
+- Verificações (agent-browser + VLM + pixels): desktop 280×59px em (20, bottom:20), 2 linhas, círculo verde detectado por pixel; ciclo monitorado: ~5s visível → intervalo ~15–22s → registro diferente (Pedro→Camila, Lucas), nunca dois ao mesmo tempo; mobile 390px: bottom:15px sem CTA, lifted (bottom:757, CTA top:775, sem overlap) com CTA visível; checkout aponta para PerfectPay; lint limpo; sem erros no dev.log.
+
+Stage Summary:
+- Popup de prova social funcionando conforme especificação InfoApp adaptado à identidade Livro dos Sonhos (grafite/dourado).
+- Checkout ativo via PerfectPay: https://go.perfectpay.com.br/PPU38CQGG7H
+- Projeto publicado no GitHub: https://github.com/sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS.git (branch main)

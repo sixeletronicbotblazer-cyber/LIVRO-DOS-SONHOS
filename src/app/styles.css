@@ -519,3 +519,28 @@ body{overflow-x:clip}
 @media (width<=767px){
 .floating-cta{display:flex}
 }
+
+/* --- Popup de compras recentes (prova social flutuante) --- */
+/* Pequena notificação no canto inferior esquerdo: entra com fade +
+   slide de baixo para cima, sai com fade. Nunca captura cliques
+   (pointer-events:none) e nunca sobrepõe a barra CTA no mobile
+   (com .is-lifted sobe acima dela). */
+.purchase-toast{position:fixed;left:20px;bottom:20px;z-index:55;pointer-events:none;max-width:min(320px,calc(100vw - 40px))}
+.purchase-toast-card{align-items:center;gap:12px;background:#141618f0;border:1px solid #2e3238;border-left:3px solid var(--gold);border-radius:14px;box-shadow:0 14px 38px #00000059;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:11px 16px 11px 13px;display:flex;width:fit-content;opacity:0;transform:translateY(18px);transition:opacity .4s ease,transform .45s cubic-bezier(.21,1,.31,1)}
+.purchase-toast[data-phase='show'] .purchase-toast-card{opacity:1;transform:translateY(0)}
+.purchase-toast[data-phase='hide'] .purchase-toast-card{opacity:0;transform:translateY(10px)}
+.purchase-toast-check{width:22px;height:22px;border-radius:50%;background:#16a34a;color:#fff;align-items:center;justify-content:center;display:flex;flex:none;box-shadow:0 0 0 3px #16a34a2b}
+.purchase-toast-text{color:#f3f1ed;display:flex;flex-direction:column;gap:3px;min-width:0}
+.purchase-toast-line{white-space:nowrap;font-size:.87rem;font-weight:600;line-height:1.25}
+.purchase-toast-line strong{font-weight:800}
+.purchase-toast-text small{color:#b8b2a8;white-space:nowrap;font-size:.77rem;font-weight:500;letter-spacing:.02em;line-height:1.2}
+@media (width<=767px){
+.purchase-toast{left:15px;bottom:15px;max-width:min(320px,calc(100vw - 30px))}
+.purchase-toast.is-lifted{bottom:calc(15px + 72px + env(safe-area-inset-bottom,0px))}
+}
+@media (width>767px){
+.purchase-toast-card{min-width:280px}
+}
+@media (prefers-reduced-motion:reduce){
+.purchase-toast-card{transition-duration:.01ms}
+}
