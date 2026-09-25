@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, Search, Smartphone, X } from 'lucide-react'
+import { ArrowRight, Check, Gift, Search, Smartphone, Sparkles, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
 
@@ -520,75 +520,82 @@ export default function Page() {
           </div>
         </section>
 
+        {/* Caixa da oferta — estrutura persuasiva estilo InfoApp: entregáveis,
+            tipos de consulta e benefícios ANTES do preço. Mesmo checkout/mesmo preço. */}
         <section className="section offer" id="oferta">
           <div className="container">
-            <header className="offer-v2-head">
-              <span className="offer-eyebrow">ACESSO IMEDIATO</span>
-              <h2>
-                Tenha o <em>Livro dos Sonhos</em> sempre com você
-              </h2>
-              <p>Consulte rapidamente o significado dos seus sonhos direto pelo celular sempre que acordar curioso para entender o que sonhou.</p>
-            </header>
-            <div className="offer-v2-grid">
-              <div className="offer-v2-left">
+            <article className="offer-box">
+              <header className="offer-box-head">
+                <span className="offer-box-eyebrow">{content.offer.eyebrow}</span>
+                <h2>
+                  Leve o Livro dos Sonhos <em>completo no seu celular</em>
+                </h2>
+                <p>{content.offer.sub}</p>
+              </header>
+              <div className="offer-box-visual">
                 <ProductShowcase />
-                <div className="offer-receive">
-                  <h3>O que você recebe hoje:</h3>
+              </div>
+              <div className="offer-block">
+                <h3>O que você recebe hoje</h3>
+                <ul className="offer-receive-list">
+                  {content.offer.receives.map((item) => (
+                    <li key={item}>
+                      <Check size={17} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="offer-block">
+                <h3>O que você encontra no livro</h3>
+                <p className="offer-find-lead">{content.offer.findLead}</p>
+                <div className="offer-find-tags">
+                  {content.offer.findTags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+                <p className="offer-find-more">{content.offer.findMore}</p>
+              </div>
+              <div className="offer-block">
+                <h3>Por que isso facilita sua consulta</h3>
+                <ul className="offer-why-list">
+                  {content.offer.why.map((item) => (
+                    <li key={item}>
+                      <Sparkles size={16} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {content.offer.bonus.length > 0 && (
+                <div className="offer-block offer-bonus">
+                  <h3>
+                    <Gift size={17} /> Bônus inclusos
+                  </h3>
                   <ul>
-                    <li>
-                      <Check size={17} /> Livro dos Sonhos completo
-                    </li>
-                    <li>
-                      <Check size={17} /> Significados, bichos e números para consultar
-                    </li>
-                    <li>
-                      <Check size={17} /> Índice organizado para encontrar rapidamente o que procura
-                    </li>
-                    <li>
-                      <Check size={17} /> Acesso pelo celular
-                    </li>
-                    <li>
-                      <Check size={17} /> Leitura prática sempre que precisar
-                    </li>
-                    <li>
-                      <Check size={17} /> Acesso digital após a compra
-                    </li>
+                    {content.offer.bonus.map((bonus) => (
+                      <li key={bonus.title}>
+                        <Gift size={15} />
+                        <span>
+                          <strong>{bonus.title}</strong> — {bonus.lead}
+                        </span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
-              </div>
-              <div className="offer-v2-right">
-                <div className="how-use">
-                  <span className="how-use-title">COMO VOCÊ USA</span>
-                  <div className="how-use-steps">
-                    <div className="how-step">
-                      <span className="how-step-number">1</span>
-                      <strong>Sonhou</strong>
-                      <p>Você acorda lembrando de uma pessoa, lugar, situação, animal ou objeto.</p>
-                    </div>
-                    <div className="how-step">
-                      <span className="how-step-number">2</span>
-                      <strong>Procura</strong>
-                      <p>Abra o Livro dos Sonhos e encontre rapidamente o termo relacionado.</p>
-                    </div>
-                    <div className="how-step">
-                      <span className="how-step-number">3</span>
-                      <strong>Descobre</strong>
-                      <p>Leia os possíveis significados e interpretações relacionados ao seu sonho.</p>
-                    </div>
-                  </div>
+              )}
+              <div className="offer-price-zone">
+                <p className="price-label">ACESSO COMPLETO</p>
+                <div className="price">
+                  <strong>{comercial.price}</strong>
+                  <small>Pagamento único • Sem assinatura</small>
                 </div>
-                <article className="price-card price-card--v2">
-                  <p className="price-label">ACESSO COMPLETO</p>
-                  <div className="price">
-                    <strong>{comercial.price}</strong>
-                    <small>Pagamento único. Sem assinatura.</small>
-                  </div>
-                  <p className="price-note">Receba seu acesso e consulte pelo celular.</p>
-                  <CheckoutButton />
-                  <p className="price-microcopy">Pagamento seguro • Acesso digital</p>
-                </article>
+                <p className="price-note">Receba seu acesso digital após a compra.</p>
+                <p className="offer-close-line">Tenha o Livro dos Sonhos sempre à mão para consultar quando quiser.</p>
+                <CheckoutButton />
+                <p className="price-microcopy">Pagamento seguro • Acesso digital</p>
               </div>
-            </div>
+            </article>
           </div>
         </section>
 

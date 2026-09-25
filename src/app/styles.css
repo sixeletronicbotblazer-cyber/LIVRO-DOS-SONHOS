@@ -462,57 +462,66 @@ body{overflow-x:clip}
 /* --- Destaques na lista "O que vem no livro?" --- */
 .inside-copy li strong{color:#1a1d1f;font-weight:800}
 
-/* --- Oferta v2 (fechamento principal) --- */
-.offer-v2-head{text-align:center;max-width:780px;margin:0 auto 46px}
-.offer-eyebrow{color:var(--gold);letter-spacing:.14em;border:1px solid #8f762d;border-radius:999px;padding:8px 16px;font-size:.78rem;font-weight:700;display:inline-block}
-.offer-v2-head h2{color:#fff;max-width:660px;margin:24px auto 0}
-.offer-v2-head h2 em{color:#ffd44b;font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:.88em;letter-spacing:-.03em}
-.offer-v2-head p{color:#ddd9d1;max-width:580px;margin:18px auto 0;font-size:1.08rem;line-height:1.62}
-.offer-v2-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:38px;align-items:start}
-.offer-v2-left{min-width:0}
-.offer-v2-right{min-width:0}
-.offer-receive{background:#fffefc;border:1px solid #e7e1d1;border-radius:18px;padding:24px 24px 20px;margin-top:24px;box-shadow:0 16px 36px #00000029}
-.offer-receive h3{color:#17191b;letter-spacing:-.01em;margin:0 0 16px;font-size:1.06rem;font-weight:800}
-.offer-receive ul{display:grid;gap:12px;margin:0;padding:0;list-style:none}
-.offer-receive li{display:flex;align-items:flex-start;gap:10px;color:#2b2f32;font-size:.99rem;font-weight:600;line-height:1.42}
-.offer-receive li svg{color:#8c6712;flex:none;margin-top:2px}
-.how-use{background:#1e2124;border:1px solid #3b4045;border-radius:18px;padding:20px 22px 22px;margin-bottom:24px}
-.how-use-title{color:var(--gold);letter-spacing:.13em;font-size:.78rem;font-weight:700;display:block}
-.how-use-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:16px}
-.how-step{position:relative;background:#26292c;border:1px solid #3b4045;border-radius:13px;padding:15px 15px 14px}
-.how-step:not(:last-child):after{content:"→";color:var(--gold);position:absolute;top:22px;right:-18px;font-size:1rem;font-weight:700}
-.how-step-number{background:var(--gold);color:#1d1b16;width:24px;height:24px;border-radius:50%;place-items:center;font-size:.8rem;font-weight:800;display:grid}
-.how-step strong{color:#fff;margin:9px 0 5px;font-size:1rem;font-weight:700;display:block}
-.how-step p{color:#c6cacc;margin:0;font-size:.83rem;line-height:1.45}
-.price-card--v2{border-top:6px solid var(--gold);border-radius:22px;padding:34px 34px 28px;box-shadow:0 28px 70px #00000059}
-.price-card--v2 .price{display:block;margin:18px 0 0;padding-top:20px}
-.price-card--v2 .price strong{display:block;white-space:nowrap;letter-spacing:-.05em;line-height:1;font-size:clamp(3.5rem,7vw,4.75rem)}
-.price-card--v2 .price small{display:block;color:#615b52;margin-top:9px;font-size:.98rem;font-weight:600}
-.price-note{color:#615b52;margin:16px 0 0;font-size:.95rem}
-.price-microcopy{color:#8a867e;text-align:center;margin:13px 0 0;font-size:.8rem}
-.button--checkout-main{width:100%;min-height:70px;margin-top:20px;border-radius:18px;font-size:1.02rem;letter-spacing:.02em}
+/* --- Oferta premium: caixa única rica estilo InfoApp (fechamento principal) ---
+   Card claro sobre a seção escura, borda dourada no topo, blocos internos
+   escaneáveis e painel de preço escuro com máximo contraste. */
+.offer-box{max-width:840px;margin:0 auto;background:#fffefb;border-top:6px solid var(--gold);border-radius:26px;padding:clamp(24px,4.2vw,42px) clamp(18px,3.6vw,40px) clamp(22px,3.4vw,36px);box-shadow:0 34px 90px #0000006b}
+.offer-box-head{text-align:center}
+.offer-box-eyebrow{color:#80600d;background:#f7ecd1;border:1px solid #e9d9a9;letter-spacing:.14em;border-radius:999px;padding:8px 16px;font-size:.76rem;font-weight:700;display:inline-block}
+.offer-box-head h2{color:#17191b;max-width:600px;margin:20px auto 0;font-size:clamp(1.8rem,4.2vw,2.45rem);line-height:1.15;letter-spacing:-.02em}
+.offer-box-head h2 em{color:#7c5c0e;font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:.9em;letter-spacing:-.02em}
+.offer-box-head p{color:#5c5851;max-width:520px;margin:14px auto 0;font-size:1.02rem;line-height:1.62}
+.offer-box-visual{margin:26px auto 8px}
+.offer-box-visual .offer-visual{margin:0 auto}
+.offer-block{border-top:1px solid #ede6d6;margin-top:22px;padding-top:22px}
+.offer-block h3{color:#17191b;margin:0 0 14px;font-size:1.07rem;font-weight:800;letter-spacing:-.012em}
+.offer-receive-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 26px;margin:0;padding:0;list-style:none}
+.offer-receive-list li{display:flex;align-items:flex-start;gap:10px;color:#2c3033;font-size:.97rem;font-weight:600;line-height:1.45}
+.offer-receive-list li svg{color:#8c6712;flex:none;margin-top:2px}
+.offer-find-lead{color:#5c5851;margin:0 0 13px;font-size:.94rem;line-height:1.55}
+.offer-find-tags{flex-wrap:wrap;gap:8px;display:flex}
+.offer-find-tags span{background:#f6f0df;border:1px solid #e4d6a9;color:#584613;border-radius:999px;padding:7px 14px;font-size:.87rem;font-weight:700}
+.offer-find-more{color:#7c5c0e;margin:13px 0 0;font-size:.92rem;font-weight:700}
+.offer-why-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 26px;margin:0;padding:0;list-style:none}
+.offer-why-list li{display:flex;align-items:flex-start;gap:10px;color:#2c3033;font-size:.95rem;font-weight:600;line-height:1.45}
+.offer-why-list li svg{color:#8c6712;flex:none;margin-top:2px}
+.offer-bonus{background:#f9f0d5;border:1px solid #e9d9a9;border-radius:16px;padding:16px 18px}
+.offer-bonus h3{color:#6f510d;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.offer-bonus h3 svg{color:#8c6712}
+.offer-bonus ul{display:grid;gap:9px;margin:0;padding:0;list-style:none}
+.offer-bonus li{display:flex;align-items:flex-start;gap:10px;color:#4a3c12;font-size:.94rem;font-weight:600;line-height:1.42}
+.offer-bonus li svg{color:#8c6712;flex:none;margin-top:2px}
+.offer-price-zone{background:linear-gradient(180deg,#23262a,#1b1e21);border:1px solid #474236;border-top:4px solid var(--gold);border-radius:18px;margin-top:26px;padding:26px 22px 22px;text-align:center;box-shadow:0 18px 44px #00000040}
+.offer-price-zone .price-label{color:var(--gold);font-size:.8rem}
+.offer-price-zone .price{display:block;border:0;margin:13px 0 0;padding:0;gap:0}
+.offer-price-zone .price strong{display:block;white-space:nowrap;color:var(--gold);letter-spacing:-.05em;line-height:1;font-family:Fira,sans-serif;font-weight:700;font-size:clamp(3.2rem,8.4vw,4.55rem)}
+.offer-price-zone .price small{display:block;color:#ece6da;margin-top:10px;font-size:1.01rem;font-weight:600}
+.offer-price-zone .price-note{color:#aaa396;margin:10px 0 0;font-size:.92rem}
+.offer-close-line{color:#d9d2c5;margin:18px 0 0;font-size:.95rem;font-weight:600}
+.button--checkout-main{width:100%;min-height:70px;margin-top:18px;border-radius:18px;font-size:1.02rem;letter-spacing:.02em}
 .button--checkout-main:disabled{border-radius:18px;padding:17px 24px}
+.offer-price-zone .price-microcopy{color:#a29c90;text-align:center;margin:12px 0 0;font-size:.8rem}
 @media (width<=920px){
-.offer-v2-head{margin-bottom:32px}
-.offer-v2-grid{grid-template-columns:1fr;gap:26px}
-}
-@media (width<=700px){
-.how-use{padding:16px 16px 18px}
-.how-use-steps{grid-template-columns:1fr;gap:10px}
-.how-step{display:grid;grid-template-columns:26px 1fr;column-gap:12px;row-gap:3px;padding:12px 13px}
-.how-step-number{grid-column:1;grid-row:1}
-.how-step strong{grid-column:2;grid-row:1;display:flex;align-items:center;margin:0}
-.how-step p{grid-column:2;grid-row:2}
-.how-step:not(:last-child):after{content:none}
+.offer-box-visual{margin-top:22px}
 }
 @media (width<=600px){
-.price-card--v2{padding:28px 18px 22px}
-.price-card--v2 .price strong{font-size:clamp(3.15rem,12vw,3.65rem)}
-.price-note{font-size:.9rem}
+.offer-box{border-radius:20px;padding:20px 14px 18px}
+.offer-box-head h2{font-size:clamp(1.7rem,7.6vw,2.1rem);line-height:1.18}
+.offer-box-head p{font-size:.97rem}
+.offer-block{margin-top:18px;padding-top:18px}
+.offer-block h3{font-size:1.02rem}
+.offer-receive-list{grid-template-columns:1fr;gap:10px}
+.offer-why-list{grid-template-columns:1fr;gap:9px}
+.offer-receive-list li,.offer-why-list li{font-size:.92rem}
+.offer-find-lead{font-size:.9rem}
+.offer-find-tags span{padding:6px 12px;font-size:.83rem}
+.offer-find-more{font-size:.88rem}
+.offer-price-zone{margin-top:20px;padding:22px 12px 18px}
+.offer-price-zone .price strong{font-size:clamp(2.35rem,10.8vw,3.3rem)}
+.offer-price-zone .price small{font-size:.94rem}
+.offer-price-zone .price-note{font-size:.88rem}
+.offer-close-line{font-size:.9rem}
 .button--checkout-main{min-height:64px;font-size:.94rem}
-.offer-receive{padding:20px 18px 16px}
-.offer-receive li{font-size:.94rem}
-.offer-v2-head p{font-size:1rem}
 .mobile-reading-note{font-size:.88rem}
 }
 
