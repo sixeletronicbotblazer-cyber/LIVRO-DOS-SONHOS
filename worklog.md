@@ -214,3 +214,23 @@ Work Log:
 
 Stage Summary:
 - Microsoft Clarity ativo no site para gravação de sessões e mapas de calor (projeto ynmey7a3f2), sem impacto no carregamento da página.
+
+---
+Task ID: offer-test-1290
+Agent: main (Z.ai Code)
+Task: Refinar a página para teste de oferta a R$ 12,90 (preservando identidade, assets, ordem das seções e mobile)
+
+Work Log:
+- Verificação prévia: checkout Cakto (pay.cakto.com.br/s859tjs_1137379) já cobra R$ 12,90 à vista (PIX: 12,90 + 0,99 taxa = 13,89) — sem divergência com o preço da página. Formato A4 confirmado pela proporção real das imagens (1.4155 ≈ 1.4142). NÃO há PDF do produto no projeto (só 7 páginas reais em webp) — "120 páginas" removido de todos os lugares (selo do hero → "LIVRO DIGITAL", facts, lista "O que vem no livro?", FAQ) e sinalizado como pendência.
+- PREÇO: comercial.ts price → 'R$ 12,90' (única fonte; card da oferta, CTA flutuante e botões atualizados automaticamente).
+- HERO: linha "Consulte no celular • Livro digital • R$ 12,90" logo abaixo da explicação; CTA principal "QUERO MEU LIVRO POR R$ 12,90" leva direto ao checkout (botão inativo se não houver URL); footnote virou link secundário para #previas; ordenação mobile ajustada (meta-line order 4, botão 5, mockup 6) com margens tightened — primeira tela 390px: CTA visível + 404px do mockup; 360px idem, sem rolagem horizontal.
+- PRÉVIAS: frase do heading trocada por "Veja o índice, encontre um verbete e confira como os números aparecem no livro." (mantida dica de arrastar). Carrossel unchanged: pausa em drag/modal/fora de viewport/hover, movimento moderado, reduced-motion respeitado, ampliação ok (modal testado: abre com original, pausa o carrossel, fecha com Escape).
+- MIOLO: "três passos" mantido (leads já são 1 frase curta por passo); seção do celular reescrita — parágrafo longo + 3 bullets + nota antiga substituídos por lead "Comprou, abriu no celular e consultou quando quiser." + nota discreta "Livro digital em PDF: amplie a página na tela ou imprima em A4 e encaderne por conta própria."; "O que vem no livro?" sem a contagem de páginas, com entregáveis reais.
+- OFERTA: lista "O que está incluso" com os 6 entregáveis verificados; mecanismo sob o preço ("Lembrou do sonho? Procure no índice, abra o verbete e veja o significado, o bicho e os números associados."); CTA "ACESSAR O LIVRO POR R$ 12,90"; microcopy "Pagamento processado pela Cakto • Acesso liberado após a confirmação" (não promete e-mail imediato); offer-close-line removida; sem descontos, cronômetro, escassez ou alegações de ganhos.
+- FAQ: reordenado conforme especificação (1. Como recebo / 2. Ler no celular / 3. Físico ou digital / 4. O que encontro / 5. Imprimir) + mantidas "Como encontro um sonho específico?" e o disclaimer sobre números. Touch targets ≥ 65px.
+- VERIFICAÇÃO: 360px, 390px e desktop — sem rolagem horizontal em nenhuma largura; carrossel + ampliação funcionando; destinos de todos os CTAs conferidos (hero e oferta → checkout; demais → âncoras); "19,90" e "120" ausentes no DOM e no código (grep); VLM aprovou hero 360, bloco de preço e seções; lint limpo; sem erros no dev.log.
+- Commit + push para o GitHub (branch main).
+
+Stage Summary:
+- Página ajustada para o teste de R$ 12,90 com checkout em conformidade (Cakto cobra R$ 12,90 à vista).
+- PENDÊNCIAS: (1) confirmar a contagem de páginas no PDF final antes de voltar a exibi-la; (2) confirmar no painel da Cakto a entrega pós-compra (liberação automática do arquivo) — a página não promete envio imediato por e-mail; (3) o checkout cobra taxa de R$ 0,99 no PIX (total 13,89) — transparência fica por conta da própria Cakto.

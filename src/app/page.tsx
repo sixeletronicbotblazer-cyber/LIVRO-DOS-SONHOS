@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, Gift, Search, Smartphone, X } from 'lucide-react'
+import { ArrowRight, Check, Gift, Search, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
 import { PurchaseToast } from '@/components/purchase-toast'
@@ -12,11 +12,29 @@ function Button({
   children,
   href = '#oferta',
   tone = 'gold',
+  external = false,
 }: {
   children: React.ReactNode
   href?: string
   tone?: 'gold' | 'dark'
+  external?: boolean
 }) {
+  /* CTA externo: leva direto ao checkout configurado. Sem URL válida,
+     o botão fica inativo (não simula compra). */
+  if (external) {
+    if (!comercial.checkoutUrl)
+      return (
+        <button className={`button button--${tone}`} type="button" disabled>
+          {children}
+        </button>
+      )
+    return (
+      <a className={`button button--${tone}`} href={comercial.checkoutUrl} rel="noopener noreferrer">
+        {children}
+        <ArrowRight size={20} aria-hidden="true" />
+      </a>
+    )
+  }
   return (
     <a className={`button button--${tone}`} href={href}>
       {children}
@@ -210,7 +228,7 @@ function CheckoutButton() {
     )
   return (
     <a className="button button--checkout button--checkout-main" href={comercial.checkoutUrl} rel="noopener noreferrer">
-      QUERO ACESSAR O LIVRO DOS SONHOS <ArrowRight size={20} aria-hidden="true" />
+      ACESSAR O LIVRO POR {comercial.price} <ArrowRight size={20} aria-hidden="true" />
     </a>
   )
 }
@@ -333,6 +351,9 @@ export default function Page() {
                 Acordou lembrando do sonho? <em>Veja o bicho e os números</em> antes de jogar.
               </h1>
               <p className="hero-lead">{content.subheadline}</p>
+              <p className="hero-meta-line">
+                Consulte no celular <span aria-hidden="true">•</span> Livro digital <span aria-hidden="true">•</span> {comercial.price}
+              </p>
               <ul className="hero-bullets">
                 {content.bullets.map((item) => (
                   <li key={item}>
@@ -341,8 +362,10 @@ export default function Page() {
                   </li>
                 ))}
               </ul>
-              <Button href="#previas">Ver o livro por dentro</Button>
-              <p className="hero-footnote">Confira as páginas reais antes de decidir.</p>
+              <Button external>QUERO MEU LIVRO POR {comercial.price}</Button>
+              <p className="hero-footnote">
+                <a href="#previas">Confira as páginas reais antes de decidir.</a>
+              </p>
             </div>
             <div className="hero-media" aria-label="Capa e páginas reais do Livro dos Sonhos">
               <div className="hero-stage">
@@ -357,7 +380,7 @@ export default function Page() {
                 </div>
               </div>
               <div className="page-marker">
-                <strong>120 PÁGINAS</strong>
+                <strong>LIVRO DIGITAL</strong>
                 <span>FORMATO A4</span>
               </div>
             </div>
@@ -399,7 +422,7 @@ export default function Page() {
               <h2>
                 Veja o livro <em>de verdade</em> antes de comprar.
               </h2>
-              <p>Índice, tabela e páginas internas: cada prévia abaixo foi retirada do material real.</p>
+              <p>Veja o índice, encontre um verbete e confira como os números aparecem no livro.</p>
             </div>
             <p className="marquee-hint">São páginas do arquivo real. Deslize para conferir.</p>
             <MarqueeRail />
@@ -439,24 +462,9 @@ export default function Page() {
               <h2 id="mobile-reading-title">
                 Seu Livro dos Sonhos vai <em>com você no telefone</em>.
               </h2>
-              <p>
-                Depois de adquirir e receber o arquivo digital, basta abrir o PDF no leitor do celular. Procure a letra do que sonhou no
-                índice, vá ao verbete e amplie a página com os dedos para ler o significado, o bicho e os números.
-              </p>
-              <ul>
-                <li>
-                  <Check size={19} /> Abra o arquivo no celular quando quiser consultar.
-                </li>
-                <li>
-                  <Check size={19} /> Amplie as páginas para ler os detalhes.
-                </li>
-                <li>
-                  <Check size={19} /> Se preferir, imprima e encaderne por conta própria.
-                </li>
-              </ul>
+              <p className="mobile-reading-lead">Comprou, abriu no celular e consultou quando quiser.</p>
               <p className="mobile-reading-note">
-                <Smartphone size={16} aria-hidden="true" />
-                Nada para carregar ou levar — o livro fica disponível no seu celular.
+                Livro digital em PDF: amplie a página na tela do celular ou, se preferir, imprima em A4 e encaderne por conta própria.
               </p>
               <Button href="#oferta" tone="dark">
                 Ver o livro digital
@@ -479,14 +487,14 @@ export default function Page() {
               <span className="section-kicker">UM LIVRO PARA CONSULTAR</span>
               <h2>O que vem no livro?</h2>
               <p>
-                Você recebe o arquivo digital em formato A4, com índice, tabela e verbetes para consultar. Se quiser uma cópia em papel,
-                pode imprimir e encadernar por conta própria.
+                O arquivo digital em formato A4, com índice, tabela e verbetes para consultar. Para ter em papel, basta imprimir e
+                encadernar por conta própria.
               </p>
               <ul>
                 <li>
                   <Check size={18} />
                   <span>
-                    <strong>Livro digital de 120 páginas</strong> em formato A4
+                    <strong>Livro digital</strong> em formato A4
                   </span>
                 </li>
                 <li>
@@ -521,8 +529,8 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Caixa da oferta — enxuta: promessa + visual do produto + preço.
-            Os entregáveis detalhados ficam nas seções anteriores da página. */}
+        {/* Caixa da oferta — entregáveis verificados + mecanismo + preço.
+            Mesmo checkout e mesmo estilo visual já aprovado. */}
         <section className="section offer" id="oferta">
           <div className="container">
             <article className="offer-box">
@@ -535,6 +543,17 @@ export default function Page() {
               </header>
               <div className="offer-box-visual">
                 <ProductShowcase />
+              </div>
+              <div className="offer-block offer-included">
+                <h3>O que está incluso</h3>
+                <ul>
+                  {content.offer.included.map((item) => (
+                    <li key={item}>
+                      <Check size={16} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
               {content.offer.bonus.length > 0 && (
                 <div className="offer-block offer-bonus">
@@ -559,10 +578,9 @@ export default function Page() {
                   <strong>{comercial.price}</strong>
                   <small>Pagamento único • Sem assinatura</small>
                 </div>
-                <p className="price-note">Receba seu acesso digital após a compra.</p>
-                <p className="offer-close-line">Tenha o Livro dos Sonhos sempre à mão para consultar quando quiser.</p>
+                <p className="price-note">{content.offer.mechanism}</p>
                 <CheckoutButton />
-                <p className="price-microcopy">Pagamento seguro • Acesso digital</p>
+                <p className="price-microcopy">Pagamento processado pela Cakto • Acesso liberado após a confirmação</p>
               </div>
             </article>
           </div>
