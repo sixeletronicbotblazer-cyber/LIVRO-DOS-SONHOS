@@ -6,6 +6,7 @@ import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
 import { trackInitiateCheckout } from '@/lib/pixel'
 import { PurchaseToast } from '@/components/purchase-toast'
+import { WhatsappHelp } from '@/components/whatsapp-help'
 
 type SelectedPage = { src: string; title: string } | null
 
@@ -625,6 +626,7 @@ export default function Page() {
       </footer>
       <FloatingCta />
       <PurchaseToast />
+      <WhatsappHelp />
     </>
   )
 }

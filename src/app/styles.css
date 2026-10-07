@@ -550,3 +550,33 @@ body{overflow-x:clip}
 @media (prefers-reduced-motion:reduce){
 .purchase-toast-card{transition-duration:.01ms}
 }
+/* --- Botão flutuante de ajuda por WhatsApp --- */
+/* Cápsula verde #25D366 no canto inferior direito, discreta: entra uma
+   única vez após ~5s com fade + slide suave. O X recolhe o texto e
+   deixa só o ícone. No mobile, sobe acima da barra CTA fixa e do popup
+   de compras recentes (mesma convenção de lift do toast) para nunca
+   cobrir CTA de compra, preço, FAQ ou avisos. */
+.whatsapp-help{position:fixed;right:20px;bottom:20px;z-index:56;display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(14px);visibility:hidden;pointer-events:none;transition:opacity .45s ease,transform .5s cubic-bezier(.21,1,.31,1),bottom .3s ease}
+.whatsapp-help.is-visible{opacity:1;transform:translateY(0);visibility:visible;pointer-events:auto}
+.whatsapp-pill{align-items:center;background:#25D366;border-radius:999px;box-shadow:0 10px 26px #0a5c2b40;display:flex;min-height:48px;min-width:48px;padding:12px 18px;color:#fff;text-decoration:none;transition:padding .35s ease,background-color .2s ease,box-shadow .2s ease}
+.whatsapp-pill:hover{background:#1fb457;box-shadow:0 12px 30px #0a5c2b59}
+.whatsapp-pill svg{flex:none}
+.whatsapp-text{color:#fff;font-size:.82rem;font-weight:700;letter-spacing:.01em;line-height:1.15;white-space:nowrap;max-width:230px;overflow:hidden;margin-left:10px;transition:max-width .4s cubic-bezier(.21,1,.31,1),margin-left .4s cubic-bezier(.21,1,.31,1),opacity .25s ease}
+.whatsapp-close{position:relative;align-items:center;background:#141618f0;border:1px solid #2e3238;border-radius:50%;color:#f2f0ec;display:flex;width:30px;height:30px;flex:none;justify-content:center;overflow:hidden;padding:0;cursor:pointer;opacity:1;transition:width .35s cubic-bezier(.21,1,.31,1),margin-left .35s cubic-bezier(.21,1,.31,1),opacity .25s ease}
+/* Área de toque ampliada sem aumentar o visual do X */
+.whatsapp-close::after{content:'';position:absolute;inset:-7px}
+.whatsapp-help.is-collapsed .whatsapp-pill{padding:12px}
+.whatsapp-help.is-collapsed .whatsapp-text{max-width:0;margin-left:0;opacity:0}
+.whatsapp-help.is-collapsed .whatsapp-close{width:0;margin-left:-8px;opacity:0;pointer-events:none}
+@media (width<=767px){
+.whatsapp-help{right:15px;bottom:15px}
+.whatsapp-help.is-lifted-cta{bottom:calc(15px + 72px + env(safe-area-inset-bottom,0px))}
+.whatsapp-help.is-lifted-toast{bottom:calc(15px + 62px + env(safe-area-inset-bottom,0px))}
+.whatsapp-help.is-lifted-cta.is-lifted-toast{bottom:calc(15px + 72px + 62px + env(safe-area-inset-bottom,0px))}
+}
+@media (width<=360px){
+.whatsapp-text{font-size:.76rem;max-width:200px}
+}
+@media (prefers-reduced-motion:reduce){
+.whatsapp-help,.whatsapp-pill,.whatsapp-text,.whatsapp-close{transition-duration:.01ms}
+}
