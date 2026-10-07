@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         {children}
-        {/* Meta Pixel — audiências e conversões (ID: 900080772936894).
+        {/* Meta Pixel — audiências e conversões (ID: 1409608484604873).
             PageView + ViewContent enfileirados juntos: garantem a ordem
             correta mesmo antes de fbevents.js terminar de carregar. */}
         <Script id="meta-pixel" strategy="afterInteractive">
@@ -42,8 +42,8 @@ export default function RootLayout({
             n.queue=[];t=b.createElement(e);t.async=!0;
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/pt_BR/fbevents.js');
-            fbq('init', '900080772936894');
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '1409608484604873');
             fbq('track', 'PageView');
             fbq('track', 'ViewContent', ${JSON.stringify({
               content_name: comercial.product,
@@ -59,7 +59,7 @@ export default function RootLayout({
             width="1"
             style={{ display: 'none' }}
             alt=""
-            src="https://www.facebook.com/tr?id=900080772936894&ev=PageView&noscript=1"
+            src="https://www.facebook.com/tr?id=1409608484604873&ev=PageView&noscript=1"
           />
         </noscript>
         {/* Microsoft Clarity — sessões e mapas de calor (ID: ynmey7a3f2) */}

@@ -1,4 +1,4 @@
-/* Meta Pixel — ID 900080772936894.
+/* Meta Pixel — ID 1409608484604873.
    O código base (init + PageView + ViewContent) é carregado no layout via
    next/script; este helper dispara eventos de clique a partir dos
    componentes cliente. */
