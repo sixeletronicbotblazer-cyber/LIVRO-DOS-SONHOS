@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, Check, Gift, Search, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
+import { trackInitiateCheckout } from '@/lib/pixel'
 import { PurchaseToast } from '@/components/purchase-toast'
 
 type SelectedPage = { src: string; title: string } | null
@@ -29,7 +30,12 @@ function Button({
         </button>
       )
     return (
-      <a className={`button button--${tone}`} href={comercial.checkoutUrl} rel="noopener noreferrer">
+      <a
+        className={`button button--${tone}`}
+        href={comercial.checkoutUrl}
+        rel="noopener noreferrer"
+        onClick={trackInitiateCheckout}
+      >
         {children}
         <ArrowRight size={20} aria-hidden="true" />
       </a>
@@ -227,7 +233,12 @@ function CheckoutButton() {
       </button>
     )
   return (
-    <a className="button button--checkout button--checkout-main" href={comercial.checkoutUrl} rel="noopener noreferrer">
+    <a
+      className="button button--checkout button--checkout-main"
+      href={comercial.checkoutUrl}
+      rel="noopener noreferrer"
+      onClick={trackInitiateCheckout}
+    >
       ACESSAR O LIVRO POR {comercial.price} <ArrowRight size={20} aria-hidden="true" />
     </a>
   )

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
+import { comercial } from '@/lib/comercial'
 import './fonts.css'
 import './styles.css'
 
@@ -30,6 +31,37 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         {children}
+        {/* Meta Pixel — audiências e conversões (ID: 900080772936894).
+            PageView + ViewContent enfileirados juntos: garantem a ordem
+            correta mesmo antes de fbevents.js terminar de carregar. */}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`!function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/pt_BR/fbevents.js');
+            fbq('init', '900080772936894');
+            fbq('track', 'PageView');
+            fbq('track', 'ViewContent', ${JSON.stringify({
+              content_name: comercial.product,
+              content_type: 'product',
+              value: comercial.priceValue,
+              currency: comercial.currency,
+            })});`}
+        </Script>
+        {/* Meta Pixel — fallback para navegadores sem JavaScript */}
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            alt=""
+            src="https://www.facebook.com/tr?id=900080772936894&ev=PageView&noscript=1"
+          />
+        </noscript>
         {/* Microsoft Clarity — sessões e mapas de calor (ID: ynmey7a3f2) */}
         <Script id="ms-clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){
