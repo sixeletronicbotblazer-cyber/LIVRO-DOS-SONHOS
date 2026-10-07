@@ -1,9 +1,18 @@
-/* Meta Pixel — ID 1409608484604873.
-   O código base (init + PageView + ViewContent) é carregado no layout via
-   next/script; este helper dispara eventos de clique a partir dos
-   componentes cliente. */
+/* Meta Pixel — dois pixels ativos no site:
+   - principal: 1409608484604873
+   - "extase":  900080772936894 (marcado como extase)
+
+   Ambos recebem exatamente os mesmos eventos: PageView + ViewContent
+   no carregamento (snippet base no layout) e InitiateCheckout nos CTAs
+   de checkout — fbq('track', ...) transmite para todos os pixels
+   inicializados no mesmo fbevents.js. */
 
 import { comercial } from '@/lib/comercial'
+
+export const metaPixels = {
+  principal: '1409608484604873',
+  extase: '900080772936894',
+} as const
 
 type Fbq = (command: string, event?: string, data?: Record<string, unknown>) => void
 

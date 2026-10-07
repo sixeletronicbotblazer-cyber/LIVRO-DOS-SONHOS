@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { comercial } from '@/lib/comercial'
+import { metaPixels } from '@/lib/pixel'
 import './fonts.css'
 import './styles.css'
 
@@ -31,9 +32,12 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         {children}
-        {/* Meta Pixel — audiências e conversões (ID: 1409608484604873).
-            PageView + ViewContent enfileirados juntos: garantem a ordem
-            correta mesmo antes de fbevents.js terminar de carregar. */}
+        {/* Meta Pixel — dois pixels com a mesma configuração:
+            - principal: 1409608484604873
+            - "extase":  900080772936894
+            Um único fbevents.js; cada fbq('track', ...) transmite para
+            os dois. PageView + ViewContent enfileirados juntos para
+            garantir a ordem antes de fbevents.js carregar. */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -43,7 +47,8 @@ export default function RootLayout({
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1409608484604873');
+            fbq('init', '${metaPixels.principal}');
+            fbq('init', '${metaPixels.extase}');
             fbq('track', 'PageView');
             fbq('track', 'ViewContent', ${JSON.stringify({
               content_name: comercial.product,
@@ -52,14 +57,21 @@ export default function RootLayout({
               currency: comercial.currency,
             })});`}
         </Script>
-        {/* Meta Pixel — fallback para navegadores sem JavaScript */}
+        {/* Meta Pixel — fallback para navegadores sem JavaScript (um por pixel) */}
         <noscript>
           <img
             height="1"
             width="1"
             style={{ display: 'none' }}
             alt=""
-            src="https://www.facebook.com/tr?id=1409608484604873&ev=PageView&noscript=1"
+            src={`https://www.facebook.com/tr?id=${metaPixels.principal}&ev=PageView&noscript=1`}
+          />
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${metaPixels.extase}&ev=PageView&noscript=1`}
           />
         </noscript>
         {/* Microsoft Clarity — sessões e mapas de calor (ID: ynmey7a3f2) */}
