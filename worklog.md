@@ -284,3 +284,19 @@ Work Log:
 Stage Summary:
 - Pixel ativo agora é o 1409608484604873; o 900080772936894 foi totalmente removido do código.
 - PENDÊNCIA: validar eventos do novo pixel no Gerenciador de Eventos da Meta (conta/pixel novo — dados podem levar minutos a horas); configurar o novo Pixel ID no painel da Cakto caso queira rastrear Purchase.
+
+---
+Task ID: pixel-dual-extase
+Agent: main (Z.ai Code)
+Task: Adicionar o pixel 900080772936894 (marcado "extase") como segundo pixel do site, com toda a configuração
+
+Work Log:
+- pixel.ts: criado export metaPixels = { principal: '1409608484604873', extase: '900080772936894' } — IDs centralizados em fonte única, "extase" marcado por nome no objeto e nos comentários.
+- layout.tsx: snippet base agora executa fbq('init') para os DOIS pixels antes dos tracks — um único fbevents.js; cada fbq('track', ...) transmite automaticamente para ambos; <noscript> com um <img> de fallback por pixel.
+- Configuração de eventos idêntica nos dois pixels: PageView + ViewContent (value 12.90 BRL) no carregamento; InitiateCheckout nos 2 CTAs de checkout (via trackPixel → fbq('track') broadcast).
+- Verificação no browser: getState().pixels retorna 2 pixels (1409608484604873 e 900080772936894), ambos com eventCount=2 após o load; após cliques nos 2 CTAs ambos chegaram a eventCount=4 (InitiateCheckout recebido nos dois); sem erros de console; VLM confirmou renderização intacta; lint limpo.
+- Commit 3c01284 + push no repo oficial sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS (main).
+
+Stage Summary:
+- Site roda com 2 Meta Pixels simultâneos (principal + extase), mesma configuração de eventos.
+- PENDÊNCIA: o nome "extase" está marcado apenas no código — para o nome aparecer no Gerenciador de Eventos, renomear o pixel 900080772936894 na interface da Meta (não é possível via código/API de pixel).
