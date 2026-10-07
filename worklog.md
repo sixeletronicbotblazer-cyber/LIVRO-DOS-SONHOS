@@ -253,3 +253,18 @@ Stage Summary:
 - Meta Pixel 900080772936894 ativo com PageView, ViewContent (valor 12.90 BRL) e InitiateCheckout nos CTAs de checkout. Eventos Purchase/AddPaymentInfo ficam por conta do checkout externo (Cakto) — não rastreáveis nesta página.
 - Publicação movida para ricardiin09trader/LIVRO-DOS-SONHOS (privado, branch main) — o token novo não tem acesso ao repo antigo (sixeletronicbotblazer-cyber), que ficou inacessível.
 - PENDÊNCIAS: (1) validar eventos no Gerenciador de Eventos da Meta (pode demorar minutos a horas para aparecerem); (2) LGPD: sem banner de consentimento na página — avaliar necessidade jurídica; (3) se quiser rastrear Purchase no pixel, configurar o Pixel ID no painel da Cakto.
+
+---
+Task ID: publish-six
+Agent: main (Z.ai Code)
+Task: Publicar projeto no repositório sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS com novo token
+
+Work Log:
+- Novo token ghp_FHlq... verificado via API: autentica como sixeletronicbotblazer-cyber (dono do repo original), com permissões admin/push no LIVRO-DOS-SONHOS (público, branch main).
+- Repo remoto estava em ae2c200 (R$ 12,90); histórico local continha cd64ff6 (Meta Pixel), 6415a55 (worklog) e 6fc18fa (auto-commit da plataforma: dev.pid + tool-results).
+- Remote 'livre-dos-sonhos' atualizado para https://<token>@github.com/sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS.git (substituindo o destino provisório ricardiin09trader/LIVRO-DOS-SONHOS usado na tarefa anterior).
+- Push fast-forward ae2c200..6fc18fa concluído sem conflito; verificado via API: commits pixel + worklog presentes e src/lib/pixel.ts no repo (1109 bytes).
+
+Stage Summary:
+- Projeto completo (R$ 12,90 + Meta Pixel 900080772936894 + Clarity + Cakto) publicado no repo oficial sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS, branch main.
+- O repo alternativo ricardiin09trader/LIVRO-DOS-SONHOS (privado) permanece no GitHub como cópia da mesma história — pode ser removido se não for necessário.
