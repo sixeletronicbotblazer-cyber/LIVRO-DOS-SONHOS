@@ -268,3 +268,19 @@ Work Log:
 Stage Summary:
 - Projeto completo (R$ 12,90 + Meta Pixel 900080772936894 + Clarity + Cakto) publicado no repo oficial sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS, branch main.
 - O repo alternativo ricardiin09trader/LIVRO-DOS-SONHOS (privado) permanece no GitHub como cópia da mesma história — pode ser removido se não for necessário.
+
+---
+Task ID: pixel-swap-1409608484604873
+Agent: main (Z.ai Code)
+Task: Substituir o Meta Pixel pelo ID 1409608484604873 (snippet fornecido pelo usuário) e publicar
+
+Work Log:
+- layout.tsx: init do pixel 900080772936894 → 1409608484604873; locale do fbevents.js ajustado para en_US conforme snippet fornecido; URL do <noscript> atualizada para o novo ID; estrutura de eventos mantida (PageView + ViewContent com value 12.90 BRL enfileirados juntos no snippet base).
+- pixel.ts: comentário de referência do ID atualizado.
+- grep confirmou zero ocorrências restantes do ID antigo em src/; lint limpo.
+- Verificação no browser: fbq.getState().pixels[0].id = 1409608484604873; eventCount=2 (PageView + ViewContent); cliques nos 2 CTAs de checkout disparam InitiateCheckout; sem erros de console.
+- Commit 0144154 + push no repo oficial sixeletronicbotblazer-cyber/LIVRO-DOS-SONHOS (main), token ghp_FHlq....
+
+Stage Summary:
+- Pixel ativo agora é o 1409608484604873; o 900080772936894 foi totalmente removido do código.
+- PENDÊNCIA: validar eventos do novo pixel no Gerenciador de Eventos da Meta (conta/pixel novo — dados podem levar minutos a horas); configurar o novo Pixel ID no painel da Cakto caso queira rastrear Purchase.
