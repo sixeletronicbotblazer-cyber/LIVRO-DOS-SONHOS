@@ -300,3 +300,21 @@ Work Log:
 Stage Summary:
 - Site roda com 2 Meta Pixels simultâneos (principal + extase), mesma configuração de eventos.
 - PENDÊNCIA: o nome "extase" está marcado apenas no código — para o nome aparecer no Gerenciador de Eventos, renomear o pixel 900080772936894 na interface da Meta (não é possível via código/API de pixel).
+
+---
+Task ID: whatsapp-help
+Agent: main (Z.ai Code)
+Task: Adicionar botão flutuante discreto de ajuda por WhatsApp preservando todo o funil
+
+Work Log:
+- ANTES DE COMEÇAR: sandbox tinha sido restaurado para ae2c200 (trabalho dos pixels fora da árvore local) — recuperado via fetch + ff-merge do remote (3d14633) com o token atual, restaurando pixel.ts/comercial.ts/layout.tsx dos 2 pixels.
+- comercial.ts: adicionado whatsappNumber: '5561996292397' (config única; só dígitos; vazio = botão não renderiza, nunca link quebrado).
+- whatsapp-help.tsx (novo): cápsula verde #25D366 com ícone oficial inline (SVG da marca) + texto "Precisa de ajuda para comprar?" + X para recolher o texto (fica só o ícone, ainda clicável); aparece ~5s (adiada se aba oculta) com entrada suave única; clique abre wa.me/5561996292397?text=<mensagem codificada> em nova aba (rel=noopener); MutationObservers sincronizam lift com .floating-cta.is-visible e .purchase-toast[data-phase=show].
+- styles.css: .whatsapp-help z-index 56; desktop right/bottom 20px; mobile 15px com env(safe-area-inset-bottom); is-lifted-cta (+72px), is-lifted-toast (+62px) e combinado (+134px) — mesma convenção do toast; X com área de toque ampliada via ::after inset -7px; colapso animado via max-width/margin; reduced-motion respeitado; fonte reduzida ≤360px.
+- page.tsx: <WhatsappHelp /> renderizado junto de <FloatingCta /> e <PurchaseToast />.
+- VERIFICAÇÃO: aparece exatamente após 5s (invisível antes); link decodificado = "Olá! Estou tentando comprar o Livro dos Sonhos e preciso de ajuda para concluir o pagamento." com número correto; teste de clique REAL navegou para api.whatsapp.com/send?phone=5561996292397&text=... (funcionamento ponta a ponta comprovado); X recolhe para círculo de 48px (texto/X invisíveis e inertes); mobile 390px: lift acima da barra CTA (sem overlap, gap 6px+), lift combinado CTA+toast (149px), desce a 15px na oferta/rodapé; 360px sem overflow horizontal; desktop discreto canto inferior direito; CTA de checkout continua direto na Cakto; VLM aprovou mobile e desktop; sem erros de console; lint limpo.
+- Commit 893f8e5 + push no repo oficial.
+
+Stage Summary:
+- Botão de ajuda por WhatsApp ativo com número 5561996292397, sem interferir no funil (checkout segue direto à Cakto) e sem cobrir CTA/preço/FAQ/avisos (coordenação dinâmica com a barra CTA e o toast de compras).
+- Para trocar o número: editar whatsappNumber em src/lib/comercial.ts (só dígitos, com código do país).
