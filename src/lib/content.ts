@@ -29,6 +29,23 @@ export const content = {
     'Interpretações com números associados',
     'Abra no celular ou imprima e encaderne por conta própria',
   ],
+  /* Depoimentos — 5 mensagens reais de clientes (capturas 331×325),
+     na ordem dos arquivos enviados, usadas como vieram: sem estrelas,
+     números de vendas ou frases inventadas. Pausa de confiança entre
+     a apresentação do livro/aplicativo e a caixa da oferta. */
+  testimonials: {
+    titleLead: 'Quem recebeu o material',
+    titleEm: 'conta como foi',
+    sub: 'Veja as mensagens de quem já consultou o Livro dos Sonhos.',
+    /* Alt serve apenas para leitores de tela (não é etiqueta visível). */
+    images: [
+      ['/assets/depoimentos/01_cavalo.png', 'Mensagem de cliente sobre um sonho com cavalo'],
+      ['/assets/depoimentos/02_livro_da_familia.png', 'Mensagem de cliente sobre o livro e a família'],
+      ['/assets/depoimentos/03_presente_para_o_pai.png', 'Mensagem de cliente sobre o acesso para o pai'],
+      ['/assets/depoimentos/04_busca_pelo_sonho.png', 'Mensagem de cliente sobre a busca pelo que sonhou'],
+      ['/assets/depoimentos/05_consulta_no_celular.png', 'Mensagem de cliente sobre a consulta no celular'],
+    ] as [string, string][],
+  },
   /* Risco zero — linha curta abaixo do botão de cada plano. */
   riskZero: 'Risco zero: 7 dias de garantia. Não gostou, devolvemos o valor.',
 

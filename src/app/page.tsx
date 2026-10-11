@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, Plus, Search, Star, X } from 'lucide-react'
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Plus, Search, Star, X } from 'lucide-react'
 import { content } from '@/lib/content'
 import { comercial } from '@/lib/comercial'
 import { trackInitiateCheckout } from '@/lib/pixel'
@@ -236,6 +236,362 @@ function MarqueeRail() {
         </div>
       )}
     </>
+  )
+}
+
+/* Depoimentos — carrossel horizontal automático e infinito.
+   Passagem de um cartão a outro: 1,3s com movimento suave; ~5s de
+   leitura parado em cada cartão; loop sem fim e sem salto visível.
+   Para o loop ser contínuo nas duas direções, os 5 depoimentos são
+   repetidos 3× internamente (cópias marcadas aria-hidden) e a posição
+   é renormalizada em silêncio após cada parada, sempre dentro do
+   trecho central do trilho — o conteúdo se repete a cada 5 cartões,
+   então a renormalização não muda nada na tela.
+   Interação: arraste por dedo ou mouse, setas e pontos. Após qualquer
+   interação manual, o avanço automático retoma ~7s depois. Pausas:
+   fora da viewport, com a aba oculta e no hover (desktop).
+   prefers-reduced-motion: sem avanço automático e deslocamentos
+   instantâneos; a navegação manual continua funcionando. */
+function TestimonialsCarousel() {
+  const railRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(0)
+  const s = useRef({
+    pos: 5, // posição no trilho (flutuante durante o arraste); domínio [5,10)
+    step: 0, // largura do cartão + espaçamento
+    center: 0, // deslocamento para centralizar o cartão em foco
+    holdTimer: 0,
+    patrol: 0,
+    moveId: 0,
+    armed: false, // pointerdown ativo (ainda sem intenção de arrastar)
+    dragging: false,
+    animating: false,
+    inView: true,
+    hover: false,
+    resumeAt: 0,
+    reduced: false,
+    canHover: false,
+    startX: 0,
+    startY: 0,
+    startPos: 5,
+  })
+
+  const HOLD_MS = 5000 // tempo de leitura em cada cartão
+  const STEP_MS = 1300 // duração da passagem de um cartão a outro
+  const RESUME_MS = 7000 // retomada do automático após interação manual
+  const images = content.testimonials.images
+  const n = images.length
+
+  const apply = () => {
+    const track = trackRef.current
+    if (!track) return
+    track.style.transform = `translate3d(${s.current.center - s.current.pos * s.current.step}px,0,0)`
+    const idx = ((Math.round(s.current.pos) % n) + n) % n
+    setActive((prev) => (prev === idx ? prev : idx))
+  }
+
+  /* Posição visual real do trilho (mesmo no meio de uma animação). */
+  const computedPos = () => {
+    const track = trackRef.current
+    if (!track) return s.current.pos
+    const raw = getComputedStyle(track).transform
+    const x = raw === 'none' ? 0 : new DOMMatrixReadOnly(raw).m41
+    return (s.current.center - x) / (s.current.step || 1)
+  }
+
+  /* Congela o movimento onde ele estiver (toque no meio da animação). */
+  const freeze = () => {
+    const track = trackRef.current
+    if (!track) return
+    s.current.pos = computedPos()
+    s.current.animating = false
+    track.style.transitionDuration = '0s'
+    apply()
+    track.getBoundingClientRect()
+  }
+
+  /* Devolve a posição ao trecho central do trilho sem mudança visual. */
+  const normalize = () => {
+    const track = trackRef.current
+    let p = s.current.pos
+    while (p >= n * 2) p -= n
+    while (p < n) p += n
+    if (p !== s.current.pos) {
+      s.current.pos = p
+      if (track) track.style.transitionDuration = '0s'
+      apply()
+      if (track) track.getBoundingClientRect()
+    }
+  }
+
+  const advance = () => {
+    const c = s.current
+    if (c.reduced || c.armed || c.dragging || c.animating || !c.inView || document.hidden) {
+      schedule()
+      return
+    }
+    go(Math.round(c.pos) + 1, STEP_MS)
+  }
+
+  const schedule = () => {
+    const c = s.current
+    clearTimeout(c.holdTimer)
+    c.holdTimer = 0
+    if (c.reduced || !c.inView || document.hidden || c.hover || c.dragging || c.armed || c.animating) return
+    if (performance.now() < c.resumeAt) return
+    c.holdTimer = window.setTimeout(advance, HOLD_MS)
+  }
+
+  const finish = (id: number) => {
+    const c = s.current
+    if (c.moveId !== id || !c.animating) return
+    c.animating = false
+    normalize()
+    schedule()
+  }
+
+  const go = (target: number, duration: number) => {
+    const track = trackRef.current
+    const c = s.current
+    if (!track) return
+    const prev = c.pos
+    c.pos = target
+    c.moveId += 1
+    const id = c.moveId
+    const moves = duration > 0 && !c.reduced && Math.abs(target - prev) > 0.001
+    if (!moves) {
+      track.style.transitionDuration = '0s'
+      apply()
+      track.getBoundingClientRect()
+      c.animating = false
+      normalize()
+      schedule()
+      return
+    }
+    c.animating = true
+    track.style.transitionDuration = `${duration}ms`
+    apply()
+    /* Rede de segurança caso o transitionend não dispare. */
+    window.setTimeout(() => finish(id), duration + 160)
+  }
+
+  /* Navegação manual (setas): um cartão por vez, mesma duração suave. */
+  const manual = (dir: 1 | -1) => {
+    const c = s.current
+    if (c.armed || c.dragging) return
+    if (c.animating) freeze()
+    c.resumeAt = performance.now() + RESUME_MS
+    clearTimeout(c.holdTimer)
+    c.holdTimer = 0
+    go(Math.round(c.pos) + dir, STEP_MS)
+  }
+
+  /* Navegação direta (pontos): caminho mais curto até o depoimento. */
+  const manualDot = (i: number) => {
+    const c = s.current
+    if (c.armed || c.dragging) return
+    if (c.animating) freeze()
+    const view = ((Math.round(c.pos) % n) + n) % n
+    let delta = (i - view) % n
+    if (delta > n / 2) delta -= n
+    if (delta < -n / 2) delta += n
+    c.resumeAt = performance.now() + RESUME_MS
+    clearTimeout(c.holdTimer)
+    c.holdTimer = 0
+    go(Math.round(c.pos) + delta, STEP_MS)
+  }
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    const c = s.current
+    if (c.armed || c.dragging) return // ignora um segundo dedo durante o arraste
+    if (e.button !== 0 && e.pointerType === 'mouse') return
+    if (c.animating) freeze()
+    c.armed = true
+    c.startX = e.clientX
+    c.startY = e.clientY
+    c.startPos = c.pos
+    clearTimeout(c.holdTimer)
+    c.holdTimer = 0
+  }
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const c = s.current
+    if (!c.armed) return
+    const dx = e.clientX - c.startX
+    if (!c.dragging) {
+      /* Só engata o arraste com intenção horizontal clara. */
+      if (Math.abs(dx) < 7) return
+      const dy = e.clientY - c.startY
+      if (Math.abs(dx) < Math.abs(dy) && Math.abs(dy) > 4) {
+        c.armed = false
+        return
+      }
+      c.dragging = true
+      const track = trackRef.current
+      if (track) track.style.transitionDuration = '0s'
+      railRef.current?.setPointerCapture(e.pointerId)
+    }
+    let p = c.startPos - dx / (c.step || 1)
+    while (p >= n * 2) p -= n
+    while (p < n) p += n
+    c.pos = p
+    apply()
+  }
+
+  const onPointerUp = () => {
+    const c = s.current
+    if (!c.armed) return
+    c.armed = false
+    if (!c.dragging) {
+      schedule()
+      return
+    }
+    c.dragging = false
+    let target = Math.round(c.pos)
+    while (target >= n * 2) target -= n
+    while (target < n) target += n
+    const dist = Math.abs(target - c.pos)
+    /* Encaixe proporcional à distância restante (máx. 1,3s, mín. 0,26s). */
+    const dur = Math.min(STEP_MS, Math.max(260, dist * STEP_MS))
+    c.resumeAt = performance.now() + RESUME_MS
+    go(target, dur)
+  }
+
+  const onPointerEnter = () => {
+    if (!s.current.canHover) return
+    s.current.hover = true
+    schedule()
+  }
+  const onPointerLeave = () => {
+    if (!s.current.canHover) return
+    s.current.hover = false
+    schedule()
+  }
+  const onDragStart = (e: React.DragEvent) => e.preventDefault()
+
+  useEffect(() => {
+    const rail = railRef.current
+    const track = trackRef.current
+    if (!rail || !track) return
+    const c = s.current
+
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    c.reduced = mq.matches
+    const onMq = (e: MediaQueryListEvent) => {
+      c.reduced = e.matches
+      schedule()
+    }
+    mq.addEventListener('change', onMq)
+
+    const measure = () => {
+      const first = track.children[0] as HTMLElement | undefined
+      const second = track.children[1] as HTMLElement | undefined
+      if (!first || !second) return
+      const w = first.offsetWidth
+      const gap = second.offsetLeft - first.offsetLeft - w
+      c.step = w + gap
+      c.center = (rail.clientWidth - w) / 2
+      track.style.transitionDuration = '0s'
+      apply()
+      track.getBoundingClientRect()
+    }
+    measure()
+    window.addEventListener('resize', measure)
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        c.inView = entry.isIntersecting
+        schedule()
+      },
+      { rootMargin: '140px 0px 140px 0px' }
+    )
+    io.observe(rail)
+
+    const onVis = () => schedule()
+    document.addEventListener('visibilitychange', onVis)
+
+    const onEnd = (e: TransitionEvent) => {
+      if (e.target !== track || e.propertyName !== 'transform') return
+      finish(c.moveId)
+    }
+    track.addEventListener('transitionend', onEnd)
+
+    /* Retoma o automático quando só o tempo da interação segurar. */
+    c.patrol = window.setInterval(() => {
+      if (!c.holdTimer) schedule()
+    }, 500)
+    schedule()
+
+    return () => {
+      mq.removeEventListener('change', onMq)
+      window.removeEventListener('resize', measure)
+      io.disconnect()
+      document.removeEventListener('visibilitychange', onVis)
+      track.removeEventListener('transitionend', onEnd)
+      clearInterval(c.patrol)
+      clearTimeout(c.holdTimer)
+    }
+  }, [])
+
+  return (
+    <div>
+      <div
+        className="testi-rail"
+        role="region"
+        aria-roledescription="carrossel"
+        aria-label="Depoimentos de quem já consultou o Livro dos Sonhos"
+        ref={railRef}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onDragStart={onDragStart}
+      >
+        <div className="testi-track" ref={trackRef}>
+          {[0, 1, 2].map((copy) =>
+            images.map(([src, alt], i) => (
+              <figure
+                className={`testi-card${active === i ? ' is-active' : ''}`}
+                key={`${copy}-${i}`}
+                aria-hidden={copy > 0 || undefined}
+              >
+                <img
+                  src={src}
+                  alt={copy > 0 ? '' : alt}
+                  width={331}
+                  height={325}
+                  draggable={false}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+            ))
+          )}
+        </div>
+      </div>
+      <div className="testi-controls">
+        <button className="testi-arrow" type="button" aria-label="Depoimento anterior" onClick={() => manual(-1)}>
+          <ChevronLeft size={20} aria-hidden="true" />
+        </button>
+        <div className="testi-dots">
+          {images.map(([, alt], i) => (
+            <button
+              key={i}
+              type="button"
+              className={`testi-dot${active === i ? ' is-active' : ''}`}
+              aria-label={`Ver depoimento ${i + 1}: ${alt}`}
+              aria-current={active === i ? 'true' : undefined}
+              onClick={() => manualDot(i)}
+            />
+          ))}
+        </div>
+        <button className="testi-arrow" type="button" aria-label="Próximo depoimento" onClick={() => manual(1)}>
+          <ChevronRight size={20} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -750,6 +1106,20 @@ export default function Page() {
                 Ver o valor do livro
               </Button>
             </div>
+          </div>
+        </section>
+
+        {/* Depoimentos — pausa de confiança antes da oferta: 5 mensagens
+            reais de clientes em carrossel automático e infinito. */}
+        <section className="section testimonials" aria-labelledby="testimonials-title">
+          <div className="container">
+            <div className="section-heading">
+              <h2 id="testimonials-title">
+                {content.testimonials.titleLead} <em>{content.testimonials.titleEm}</em>
+              </h2>
+              <p>{content.testimonials.sub}</p>
+            </div>
+            <TestimonialsCarousel />
           </div>
         </section>
 
