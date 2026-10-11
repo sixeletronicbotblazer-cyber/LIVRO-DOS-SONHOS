@@ -239,48 +239,43 @@ function MarqueeRail() {
   )
 }
 
-/* Depoimentos — carrossel horizontal automático e infinito.
-   Passagem de um cartão a outro: 1,3s com movimento suave; ~5s de
-   leitura parado em cada cartão; loop sem fim e sem salto visível.
-   Para o loop ser contínuo nas duas direções, os 5 depoimentos são
-   repetidos 3× internamente (cópias marcadas aria-hidden) e a posição
-   é renormalizada em silêncio após cada parada, sempre dentro do
-   trecho central do trilho — o conteúdo se repete a cada 5 cartões,
-   então a renormalização não muda nada na tela.
-   Interação: arraste por dedo ou mouse, setas e pontos. Após qualquer
-   interação manual, o avanço automático retoma ~7s depois. Pausas:
-   fora da viewport, com a aba oculta e no hover (desktop).
-   prefers-reduced-motion: sem avanço automático e deslocamentos
-   instantâneos; a navegação manual continua funcionando. */
+/* Depoimentos — carrossel horizontal MANUAL: sem avanço automático.
+   A imagem só muda quando o visitante decide — setas laterais (um
+   cartão por vez), pontos de acesso direto, deslize/arraste com
+   encaixe ou setas do teclado. O loop continua infinito nos dois
+   sentidos: os 5 depoimentos são repetidos 3× internamente (cópias
+   marcadas aria-hidden) e a posição é renormalizada em silêncio
+   após cada parada, sempre dentro do trecho central do trilho — o
+   conteúdo se repete a cada 5 cartões, então a renormalização não
+   muda nada na tela. Tocar no cartão em foco abre a mensagem
+   ampliada, no mesmo mecanismo das páginas internas do livro.
+   prefers-reduced-motion: deslocamentos instantâneos; a navegação
+   manual continua funcionando. */
 function TestimonialsCarousel() {
   const railRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  const [selected, setSelected] = useState<number | null>(null)
   const s = useRef({
     pos: 5, // posição no trilho (flutuante durante o arraste); domínio [5,10)
     step: 0, // largura do cartão + espaçamento
     center: 0, // deslocamento para centralizar o cartão em foco
-    holdTimer: 0,
-    patrol: 0,
     moveId: 0,
     armed: false, // pointerdown ativo (ainda sem intenção de arrastar)
     dragging: false,
     animating: false,
-    inView: true,
-    hover: false,
-    resumeAt: 0,
     reduced: false,
-    canHover: false,
     startX: 0,
     startY: 0,
     startPos: 5,
+    lastDx: 0, // deslocamento horizontal do último toque (separa toque de arraste)
   })
 
-  const HOLD_MS = 5000 // tempo de leitura em cada cartão
-  const STEP_MS = 1300 // duração da passagem de um cartão a outro
-  const RESUME_MS = 7000 // retomada do automático após interação manual
+  const STEP_MS = 550 // duração do deslocamento a cada navegação
   const images = content.testimonials.images
   const n = images.length
+
+  useEscapeKey(selected !== null, () => setSelected(null))
 
   const apply = () => {
     const track = trackRef.current
@@ -324,30 +319,11 @@ function TestimonialsCarousel() {
     }
   }
 
-  const advance = () => {
-    const c = s.current
-    if (c.reduced || c.armed || c.dragging || c.animating || !c.inView || document.hidden) {
-      schedule()
-      return
-    }
-    go(Math.round(c.pos) + 1, STEP_MS)
-  }
-
-  const schedule = () => {
-    const c = s.current
-    clearTimeout(c.holdTimer)
-    c.holdTimer = 0
-    if (c.reduced || !c.inView || document.hidden || c.hover || c.dragging || c.armed || c.animating) return
-    if (performance.now() < c.resumeAt) return
-    c.holdTimer = window.setTimeout(advance, HOLD_MS)
-  }
-
   const finish = (id: number) => {
     const c = s.current
     if (c.moveId !== id || !c.animating) return
     c.animating = false
     normalize()
-    schedule()
   }
 
   const go = (target: number, duration: number) => {
@@ -375,18 +351,15 @@ function TestimonialsCarousel() {
     window.setTimeout(() => finish(id), duration + 160)
   }
 
-  /* Navegação manual (setas): um cartão por vez, mesma duração suave. */
+  /* Navegação manual (setas e teclado): um cartão por vez. */
   const manual = (dir: 1 | -1) => {
     const c = s.current
     if (c.armed || c.dragging) return
     if (c.animating) freeze()
-    c.resumeAt = performance.now() + RESUME_MS
-    clearTimeout(c.holdTimer)
-    c.holdTimer = 0
     go(Math.round(c.pos) + dir, STEP_MS)
   }
 
-  /* Navegação direta (pontos): caminho mais curto até o depoimento. */
+  /* Navegação direta (pontos e cartões vizinhos): caminho mais curto. */
   const manualDot = (i: number) => {
     const c = s.current
     if (c.armed || c.dragging) return
@@ -395,9 +368,6 @@ function TestimonialsCarousel() {
     let delta = (i - view) % n
     if (delta > n / 2) delta -= n
     if (delta < -n / 2) delta += n
-    c.resumeAt = performance.now() + RESUME_MS
-    clearTimeout(c.holdTimer)
-    c.holdTimer = 0
     go(Math.round(c.pos) + delta, STEP_MS)
   }
 
@@ -407,11 +377,10 @@ function TestimonialsCarousel() {
     if (e.button !== 0 && e.pointerType === 'mouse') return
     if (c.animating) freeze()
     c.armed = true
+    c.lastDx = 0
     c.startX = e.clientX
     c.startY = e.clientY
     c.startPos = c.pos
-    clearTimeout(c.holdTimer)
-    c.holdTimer = 0
   }
 
   const onPointerMove = (e: React.PointerEvent) => {
@@ -431,6 +400,7 @@ function TestimonialsCarousel() {
       if (track) track.style.transitionDuration = '0s'
       railRef.current?.setPointerCapture(e.pointerId)
     }
+    c.lastDx = Math.abs(dx)
     let p = c.startPos - dx / (c.step || 1)
     while (p >= n * 2) p -= n
     while (p < n) p += n
@@ -442,32 +412,39 @@ function TestimonialsCarousel() {
     const c = s.current
     if (!c.armed) return
     c.armed = false
-    if (!c.dragging) {
-      schedule()
-      return
-    }
+    if (!c.dragging) return
     c.dragging = false
     let target = Math.round(c.pos)
     while (target >= n * 2) target -= n
     while (target < n) target += n
     const dist = Math.abs(target - c.pos)
-    /* Encaixe proporcional à distância restante (máx. 1,3s, mín. 0,26s). */
-    const dur = Math.min(STEP_MS, Math.max(260, dist * STEP_MS))
-    c.resumeAt = performance.now() + RESUME_MS
+    /* Encaixe proporcional à distância restante (máx. 0,55s, mín. 0,18s). */
+    const dur = Math.min(STEP_MS, Math.max(180, dist * STEP_MS))
     go(target, dur)
   }
 
-  const onPointerEnter = () => {
-    if (!s.current.canHover) return
-    s.current.hover = true
-    schedule()
-  }
-  const onPointerLeave = () => {
-    if (!s.current.canHover) return
-    s.current.hover = false
-    schedule()
-  }
   const onDragStart = (e: React.DragEvent) => e.preventDefault()
+
+  /* Setas do teclado navegam quando o carrossel tem o foco. */
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      manual(-1)
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      manual(1)
+    }
+  }
+
+  /* Toque no cartão em foco abre a mensagem ampliada — o mesmo
+     mecanismo das páginas internas do livro. Nos vizinhos, traz o
+     cartão tocado para o centro. */
+  const openCard = (i: number) => {
+    if (s.current.lastDx > 8) return
+    const view = ((Math.round(s.current.pos) % n) + n) % n
+    if (i === view) setSelected(i)
+    else manualDot(i)
+  }
 
   useEffect(() => {
     const rail = railRef.current
@@ -479,7 +456,6 @@ function TestimonialsCarousel() {
     c.reduced = mq.matches
     const onMq = (e: MediaQueryListEvent) => {
       c.reduced = e.matches
-      schedule()
     }
     mq.addEventListener('change', onMq)
 
@@ -498,51 +474,29 @@ function TestimonialsCarousel() {
     measure()
     window.addEventListener('resize', measure)
 
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        c.inView = entry.isIntersecting
-        schedule()
-      },
-      { rootMargin: '140px 0px 140px 0px' }
-    )
-    io.observe(rail)
-
-    const onVis = () => schedule()
-    document.addEventListener('visibilitychange', onVis)
-
     const onEnd = (e: TransitionEvent) => {
       if (e.target !== track || e.propertyName !== 'transform') return
       finish(c.moveId)
     }
     track.addEventListener('transitionend', onEnd)
 
-    /* Retoma o automático quando só o tempo da interação segurar. */
-    c.patrol = window.setInterval(() => {
-      if (!c.holdTimer) schedule()
-    }, 500)
-    schedule()
-
     return () => {
       mq.removeEventListener('change', onMq)
       window.removeEventListener('resize', measure)
-      io.disconnect()
-      document.removeEventListener('visibilitychange', onVis)
       track.removeEventListener('transitionend', onEnd)
-      clearInterval(c.patrol)
-      clearTimeout(c.holdTimer)
     }
   }, [])
 
   return (
-    <div>
+    <div className="testi-stage">
       <div
         className="testi-rail"
         role="region"
         aria-roledescription="carrossel"
         aria-label="Depoimentos de quem já consultou o Livro dos Sonhos"
+        tabIndex={0}
         ref={railRef}
-        onPointerEnter={onPointerEnter}
-        onPointerLeave={onPointerLeave}
+        onKeyDown={onKey}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -552,29 +506,48 @@ function TestimonialsCarousel() {
         <div className="testi-track" ref={trackRef}>
           {[0, 1, 2].map((copy) =>
             images.map(([src, alt], i) => (
-              <figure
+              <button
                 className={`testi-card${active === i ? ' is-active' : ''}`}
                 key={`${copy}-${i}`}
+                type="button"
                 aria-hidden={copy > 0 || undefined}
+                tabIndex={copy > 0 ? -1 : undefined}
+                aria-label={copy > 0 ? undefined : `Ampliar mensagem: ${alt}`}
+                onClick={() => openCard(i)}
               >
                 <img
                   src={src}
-                  alt={copy > 0 ? '' : alt}
+                  alt=""
                   width={331}
                   height={325}
                   draggable={false}
                   loading="lazy"
                   decoding="async"
                 />
-              </figure>
+              </button>
             ))
           )}
         </div>
+        <button
+          className="testi-arrow testi-arrow--prev"
+          type="button"
+          aria-label="Depoimento anterior"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => manual(-1)}
+        >
+          <ChevronLeft size={22} aria-hidden="true" />
+        </button>
+        <button
+          className="testi-arrow testi-arrow--next"
+          type="button"
+          aria-label="Próximo depoimento"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => manual(1)}
+        >
+          <ChevronRight size={22} aria-hidden="true" />
+        </button>
       </div>
       <div className="testi-controls">
-        <button className="testi-arrow" type="button" aria-label="Depoimento anterior" onClick={() => manual(-1)}>
-          <ChevronLeft size={20} aria-hidden="true" />
-        </button>
         <div className="testi-dots">
           {images.map(([, alt], i) => (
             <button
@@ -587,10 +560,27 @@ function TestimonialsCarousel() {
             />
           ))}
         </div>
-        <button className="testi-arrow" type="button" aria-label="Próximo depoimento" onClick={() => manual(1)}>
-          <ChevronRight size={20} aria-hidden="true" />
-        </button>
       </div>
+      <p className="testi-hint">{content.testimonials.hint}</p>
+      {selected !== null && (
+        <div
+          className="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Depoimento ampliado: ${images[selected][1]}`}
+          onClick={() => setSelected(null)}
+        >
+          <button className="modal-close" type="button" onClick={() => setSelected(null)} aria-label="Fechar depoimento ampliado">
+            <X />
+          </button>
+          <img
+            className="testi-zoom"
+            src={images[selected][0]}
+            alt={`Depoimento ampliado: ${images[selected][1]}`}
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -1110,7 +1100,8 @@ export default function Page() {
         </section>
 
         {/* Depoimentos — pausa de confiança antes da oferta: 5 mensagens
-            reais de clientes em carrossel automático e infinito. */}
+            reais de clientes em carrossel manual (setas, pontos, deslize
+            e teclado), sem avanço automático. */}
         <section className="section testimonials" aria-labelledby="testimonials-title">
           <div className="container">
             <div className="section-heading">

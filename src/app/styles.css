@@ -744,41 +744,54 @@ img.plan-thumb--kit{width:84px}
 }
 
 /* ===== Depoimentos — pausa de confiança antes da oferta ===== */
-/* Carrossel horizontal automático e infinito: 5 mensagens reais
-   (331×325, object-fit: contain, cantos suaves). Trilho repetido
-   3× internamente para o loop contínuo; a posição é renormalizada
-   em silêncio pelo JS, por isso o movimento nunca "volta com salto". */
+/* Carrossel horizontal MANUAL: nada se move sozinho. Setas laterais
+   sempre visíveis (sobre o trilho, presas às bordas do container em
+   desktop e às bordas da tela no mobile), pontos de acesso direto,
+   deslize com encaixe e setas do teclado; loop infinito nos dois
+   sentidos (trilho repetido 3× internamente, posição renormalizada
+   em silêncio pelo JS, sem salto). Tocar no cartão em foco abre a
+   mensagem ampliada — mesmo mecanismo das páginas internas do livro. */
 .testimonials{color:#fff;background:radial-gradient(circle at 50% -12%,#262420 0,#151514 70%)}
 .testimonials h2{color:#fff}
 .testimonials .section-heading h2 em{color:#ffd44b;font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:.88em;letter-spacing:-.03em}
 .testimonials .section-heading p{color:#d9d3c9}
+.testi-stage{position:relative}
 .testi-rail{position:relative;margin-inline:calc(50% - 50vw);overflow:hidden;cursor:grab;touch-action:pan-y;padding:16px 0 10px}
 .testi-rail:active{cursor:grabbing}
 .testi-rail,.testi-rail *{user-select:none;-webkit-user-select:none}
 .testi-rail img{-webkit-user-drag:none}
-.testi-track{display:flex;gap:22px;width:max-content;will-change:transform;transform:translate3d(0,0,0);transition:transform 1.3s cubic-bezier(.22,.61,.36,1)}
-.testi-card{flex:0 0 auto;width:336px;aspect-ratio:331/325;margin:0;padding:10px;background:#232220;border:1px solid #3a3733;border-radius:16px;opacity:.52;transform:scale(.94);transition:opacity 1.3s cubic-bezier(.22,.61,.36,1),transform 1.3s cubic-bezier(.22,.61,.36,1),border-color .45s ease,box-shadow .45s ease}
+.testi-rail:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.testi-track{display:flex;gap:22px;width:max-content;will-change:transform;transform:translate3d(0,0,0);transition:transform .55s cubic-bezier(.22,.61,.36,1)}
+.testi-card{flex:0 0 auto;width:336px;aspect-ratio:331/325;margin:0;padding:10px;background:#232220;border:1px solid #3a3733;border-radius:16px;opacity:.52;transform:scale(.94);transition:opacity .55s cubic-bezier(.22,.61,.36,1),transform .55s cubic-bezier(.22,.61,.36,1),border-color .45s ease,box-shadow .45s ease;cursor:pointer;font:inherit;color:inherit}
 .testi-card img{display:block;width:100%;height:100%;object-fit:contain;border-radius:10px;background:#111}
 .testi-card.is-active{opacity:1;transform:scale(1);border-color:#79601f;box-shadow:0 24px 60px #000a}
+.testi-card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.testi-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:48px;height:48px;border-radius:50%;border:1px solid #57503f;background:#1d1c19f2;color:#ffd44b;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 30px #0009;transition:background .25s ease,border-color .25s ease,scale .25s ease}
+.testi-arrow--prev{left:max(18px,calc(50vw - 600px))}
+.testi-arrow--next{right:max(18px,calc(50vw - 600px))}
+.testi-arrow:hover{background:#2b2a27;border-color:#8a6f2a}
+.testi-arrow:active{scale:.94}
+.testi-arrow:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .testi-controls{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:6px}
-.testi-arrow{width:44px;height:44px;border-radius:50%;border:1px solid #4a463f;background:#20201ecc;color:#ffd44b;display:grid;place-items:center;cursor:pointer;transition:background .25s ease,border-color .25s ease,transform .25s ease}
-.testi-arrow:hover{background:#2b2a27;border-color:#6b5a28}
-.testi-arrow:active{transform:scale(.94)}
-.testi-arrow:focus-visible,.testi-dot:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .testi-dots{display:flex;gap:6px;align-items:center}
 .testi-dot{position:relative;width:30px;height:30px;padding:0;background:transparent;border:0;cursor:pointer}
 .testi-dot::after{content:"";position:absolute;inset:0;margin:auto;width:8px;height:8px;border-radius:99px;background:#4a463f;transition:width .35s ease,background .35s ease}
 .testi-dot.is-active::after{width:20px;background:var(--gold)}
 .testi-dot:hover::after{background:#6b5a28}
+.testi-dot:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.testi-hint{text-align:center;color:#9a948a;font-size:.82rem;margin:10px 0 0}
+.modal img.testi-zoom{width:min(92vw,460px)}
 @media (width<=920px){
 .testi-track{gap:16px}
-.testi-card{width:min(78vw,336px)}
+.testi-card{width:min(72vw,336px)}
+.testi-arrow{width:44px;height:44px}
+.testi-arrow--prev{left:8px}
+.testi-arrow--next{right:8px}
 }
 @media (width<=600px){
 .testi-rail{padding:12px 0 8px}
-.testi-controls{gap:12px}
-.testi-arrow{width:40px;height:40px}
+.testi-hint{font-size:.78rem}
 }
 @media (prefers-reduced-motion:reduce){
-.testi-card,.testi-dot,.testi-arrow{transition:none}
+.testi-track,.testi-card,.testi-dot,.testi-arrow{transition:none}
 }

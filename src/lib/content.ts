@@ -37,6 +37,7 @@ export const content = {
     titleLead: 'Quem recebeu o material',
     titleEm: 'conta como foi',
     sub: 'Veja as mensagens de quem já consultou o Livro dos Sonhos.',
+    hint: 'Use as setas ou deslize · toque na mensagem para ampliar',
     /* Alt serve apenas para leitores de tela (não é etiqueta visível). */
     images: [
       ['/assets/depoimentos/01_cavalo.png', 'Mensagem de cliente sobre um sonho com cavalo'],
